@@ -62,15 +62,22 @@ class NetworkUtil {
           }
           myPicks.add(LottoPick(int.tryParse(myNumberList.children[i].children[1].text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, pickNumbers));
         }
-
+        print(calculateDrawNum(DateTime.now()));
+        print(int.parse(drawNo.substring(2, 2 +   drawNo.length - 4)));
         if(calculateDrawNum(DateTime.now()) < int.parse(drawNo.substring(2, 2 +   drawNo.length - 4))) {
+          print('!');
           return Future<LottoQRResult>.value(LottoQRResult(null, 0, myPicks));
         } else {
           Lotto drawResult = await getLottoNumber(int.parse(drawNo.substring(2, 2 +   drawNo.length - 4)));
 
-          String prize = winnerNumber.children[2].children[0].children[1].getElementsByClassName('key_clr1')[0].text;
-
-          return Future<LottoQRResult>.value(LottoQRResult(drawResult, int.tryParse(prize.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, myPicks));
+          print('!!');
+          var key_clr1 = winnerNumber.children[2].children[0].children[1].getElementsByClassName('key_clr1');
+          if(key_clr1.length > 0) {
+            String prize = winnerNumber.children[2].children[0].children[1].getElementsByClassName('key_clr1')[0].text;
+            return Future<LottoQRResult>.value(LottoQRResult(drawResult, int.tryParse(prize.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, myPicks));
+          } else {
+            return Future<LottoQRResult>.value(LottoQRResult(drawResult, 0, myPicks));
+          }
         }
 
       }
