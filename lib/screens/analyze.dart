@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lotto/animation/fade.dart';
 import 'package:lotto/widgets/basescreen.dart';
 import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/dialogs.dart';
@@ -117,49 +118,56 @@ class _AnalyzePageState extends State<AnalyzePage> {
           },
         ),
       ],
-      body: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          return Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.1,
-            decoration: roundBoxDecoration(),
-            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                LottoBall(_analyzedBallCounts[index].key + 1),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: EdgeInsets.only(bottom: 50),
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            return FadeInOffset(
+              delayInMilisecond: index * 25,
+              offset: Offset(0, 50),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.1,
+                decoration: roundBoxDecoration(),
+                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    LinearPercentIndicator(
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      lineHeight: 14.0,
-                      backgroundColor: Colors.grey,
-                      progressColor: Colors.blue,
-                      percent: (_analyzedBallCounts[index]?.value ?? 0) / _totalBallCount,
-                      animation: true,
-                      animationDuration: 1000,
-                    ),
-                    Space(5),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          TextBinggrae('${(_analyzedBallCounts[index]?.value ?? 0)}', size: 9,),
-                          TextBinggrae('$_totalBallCount', size: 9,),
-                        ],
-                      ),
+                    LottoBall(_analyzedBallCounts[index].key + 1),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        LinearPercentIndicator(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          lineHeight: 14.0,
+                          backgroundColor: Colors.grey,
+                          progressColor: Colors.blue,
+                          percent: (_analyzedBallCounts[index]?.value ?? 0) / _maxCount,
+                          animation: true,
+                          animationDuration: 1000,
+                        ),
+                        Space(5),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              TextBinggrae('${(_analyzedBallCounts[index]?.value ?? 0)}', size: 9,),
+                              TextBinggrae('$_maxCount', size: 9,),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          );
-        },
-        itemCount: _analyzedBallCounts.length,
+              ),
+            );
+          },
+          itemCount: _analyzedBallCounts.length,
+        ),
       ),
     );
   }

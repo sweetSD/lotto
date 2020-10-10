@@ -8,22 +8,23 @@ part of 'lotto.dart';
 
 Lotto _$LottoFromJson(Map<String, dynamic> json) {
   return Lotto(
-      json['returnValue'] as String,
-      json['drwNo'] as num,
-      json['drwNoDate'] == null
-          ? null
-          : DateTime.parse(json['drwNoDate'] as String),
-      json['totSellamnt'] as num,
-      json['firstAccumamnt'] as num,
-      json['firstWinamnt'] as num,
-      json['firstPrzwnerCo'] as num,
-      json['drwtNo1'] as num,
-      json['drwtNo2'] as num,
-      json['drwtNo3'] as num,
-      json['drwtNo4'] as num,
-      json['drwtNo5'] as num,
-      json['drwtNo6'] as num,
-      json['bnusNo'] as num);
+    json['returnValue'] as String,
+    json['drwNo'] as num,
+    json['drwNoDate'] == null
+        ? null
+        : DateTime.parse(json['drwNoDate'] as String),
+    json['totSellamnt'] as num,
+    json['firstAccumamnt'] as num,
+    json['firstWinamnt'] as num,
+    json['firstPrzwnerCo'] as num,
+    json['drwtNo1'] as num,
+    json['drwtNo2'] as num,
+    json['drwtNo3'] as num,
+    json['drwtNo4'] as num,
+    json['drwtNo5'] as num,
+    json['drwtNo6'] as num,
+    json['bnusNo'] as num,
+  );
 }
 
 Map<String, dynamic> _$LottoToJson(Lotto instance) => <String, dynamic>{
@@ -40,5 +41,5 @@ Map<String, dynamic> _$LottoToJson(Lotto instance) => <String, dynamic>{
       'drwtNo4': instance.drawNo4,
       'drwtNo5': instance.drawNo5,
       'drwtNo6': instance.drawNo6,
-      'bnusNo': instance.drawBonus
+      'bnusNo': instance.drawBonus,
     };

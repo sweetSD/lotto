@@ -3,7 +3,7 @@ import 'package:lotto/widgets/text.dart';
 
 class BaseScreen extends StatelessWidget {
 
-  final AppBar appbar;
+  final AppBar appBar;
 
   final String title;
 
@@ -19,7 +19,7 @@ class BaseScreen extends StatelessWidget {
 
   const BaseScreen({
     Key key, 
-    this.appbar, 
+    this.appBar, 
     this.title = '',
     this.centerTitle = true,
     this.resizeToAvoidBottomInset = true,
@@ -32,7 +32,7 @@ class BaseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      appBar: appbar != null ? appbar : AppBar(
+      appBar: appBar != null ? appBar : AppBar(
         backgroundColor: Colors.white,
         title: TextBinggrae(title, size: 18,),
         centerTitle: centerTitle,

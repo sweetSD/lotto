@@ -37,6 +37,12 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
   }
 
   @override
+  void dispose() {
+    interstitialAdCallbacks = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseScreen(
       title: '행운 번호 추첨',
@@ -109,12 +115,11 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                     offset: Offset(0, 10),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.125,
-                      color: index % 2 == 0 ? Colors.white : Colors.grey[200],
+                      height: 75,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          LottoPickWidget(_luckyNums.length > 0 ? _luckyNums[index + 1] : [], onlyPicks: true, color: Colors.white,),
+                          LottoPickWidget(_luckyNums.length > 0 ? _luckyNums[index + 1] : [], onlyPicks: true, color: Colors.transparent,),
                         ],
                       ),
                     ),
@@ -124,7 +129,8 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
               ),
-            ]
+            ],
+            Space(50),
           ],
         ),
       ),
@@ -132,12 +138,12 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
   }
 
   Future<void> generateLuckyNumbers() async {
-    interstitialAdCallbacks.add((event) {
+    interstitialAdCallbacks = (event) {
       if(event == MobileAdEvent.opened) {
         generateNumbers();
-        interstitialAdCallbacks.clear();
+        interstitialAdCallbacks = null;
       }
-    });
+    };
     await getInterstitialAd().load();
     await getInterstitialAd().show();
   }
@@ -158,6 +164,5 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
       saveList.add(element.map((e) => e.toString()).toList().join(','));
     });
     NetworkUtil().preference.setStringList('lucky', saveList);
-    interstitialAdCallbacks.clear();
   }
 }

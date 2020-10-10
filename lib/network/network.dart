@@ -1,12 +1,15 @@
 import 'dart:convert' as convert;
+import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:html/parser.dart' as parser;
-import 'package:html/dom.dart' as dom;
-import 'package:lotto/encode.dart';
+import 'package:http/http.dart' as http;
+import 'package:lotto/const.dart';
 import 'package:lotto/network/lotto.dart';
+import 'package:lotto/network/place.dart';
+import 'package:lotto/screens/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NetworkUtil {
@@ -48,10 +51,6 @@ class NetworkUtil {
 
         String drawNo = winnerNumber.children[0].children[0].text;
 
-        Lotto drawResult = await getLottoNumber(int.parse(drawNo.substring(2, 2 +   drawNo.length - 4)));
-
-        String prize = winnerNumber.children[2].children[0].children[1].getElementsByClassName('key_clr1')[0].text;
-
         var myNumberList = document.getElementsByClassName('list_my_number')[0].children[0].children[0].children[2];
 
         List<LottoPick> myPicks = [];
@@ -63,7 +62,17 @@ class NetworkUtil {
           }
           myPicks.add(LottoPick(int.tryParse(myNumberList.children[i].children[1].text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, pickNumbers));
         }
-        return Future<LottoQRResult>.value(LottoQRResult(drawResult, int.tryParse(prize.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, myPicks));
+
+        if(calculateDrawNum(DateTime.now()) < int.parse(drawNo.substring(2, 2 +   drawNo.length - 4))) {
+          return Future<LottoQRResult>.value(LottoQRResult(null, 0, myPicks));
+        } else {
+          Lotto drawResult = await getLottoNumber(int.parse(drawNo.substring(2, 2 +   drawNo.length - 4)));
+
+          String prize = winnerNumber.children[2].children[0].children[1].getElementsByClassName('key_clr1')[0].text;
+
+          return Future<LottoQRResult>.value(LottoQRResult(drawResult, int.tryParse(prize.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0, myPicks));
+        }
+
       }
     } catch (e) {
       print('error - ' + e);
@@ -157,5 +166,22 @@ class NetworkUtil {
       print('error - ' + e);
     }
     return Future<void>.error(null);
+  }
+
+  Future<PlaceResponse> getPlaceFromKakaoAPI(String query, Position position, int radius, {int page = 1}) async {
+    try {
+      var uri = Uri.https('dapi.kakao.com', '/v2/local/search/keyword.json', { 'query': query, 'y': position.latitude.toString(), 'x': position.longitude.toString(), 'radius': radius.toString(), 'page': page.toString() });
+      var response = await http.get(uri, headers: {HttpHeaders.authorizationHeader: 'KakaoAK $kakaoApiKey'});
+      if(response.statusCode == 200) {
+        
+        Clipboard.setData(ClipboardData(text: response.body));
+        var places = List.from(convert.jsonDecode(response.body)['documents']).map((e) => Place.fromJson(e)).toList();
+
+        return Future<PlaceResponse>.value(PlaceResponse(places, convert.jsonDecode(response.body)['meta']['is_end'] as bool));
+      }
+    } catch (e) {
+      print('error - ' + e);
+    }
+    return Future<PlaceResponse>.error(PlaceResponse([], true));
   }
 }

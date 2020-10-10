@@ -47,30 +47,43 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    LottoWinResultWidget(result.lotto),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          if(result.prize > 0) ... [
-                            TextBinggrae('축하합니다!'),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                  TextBinggrae('총 '),
-                                  TextBinggrae('${NumberFormat('###,###,###,###').format(result.prize)}원', color: Colors.blue,),
-                                  TextBinggrae(' 당첨'),
-                              ],
-                            ),
-                          ] else ... [
-                            TextBinggrae('아쉽게도 낙첨 되셨습니다.'),
-                          ]
-                        ],
+                    if(result.lotto != null) ... [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: LottoWinResultWidget(result.lotto),
                       ),
-                    ),
+                    ] else ... [
+                      Container(
+                        height: 75,
+                        alignment: Alignment.center,
+                        child: TextBinggrae('미추첨 복권입니다.'),
+                      ),
+                    ],
+                    if(result.lotto != null) ... [
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.15,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            if(result.prize > 0) ... [
+                              TextBinggrae('축하합니다!'),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                    TextBinggrae('총 '),
+                                    TextBinggrae('${NumberFormat('###,###,###,###').format(result.prize)}원', color: Colors.blue,),
+                                    TextBinggrae(' 당첨'),
+                                ],
+                              ),
+                            ] else ... [
+                              TextBinggrae('아쉽게도 낙첨 되셨습니다.'),
+                            ]
+                          ],
+                        ),
+                      ),
+                    ],
                     for(int i = 0; i < result.picks.length; i++) ... [
-                      LottoPickWidget(result.picks[i].pickNumbers, index: i, rank: result.picks[i].result, color: i % 2 == 1 ? Colors.white : Color(0xffeeeeee), result: result.lotto.numbers,),
+                      LottoPickWidget(result.picks[i].pickNumbers, index: i, rank: result.lotto != null ? result.picks[i].result : null, color: i % 2 == 1 ? Colors.white : Color(0xffeeeeee), result: result.lotto?.numbers ?? null,),
                     ]
                   ],
                 ),
@@ -83,6 +96,87 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
           }
         },
       ),
+    );
+  }
+}
+
+class LottoResultPage extends StatefulWidget {
+
+  final Lotto lotto;
+
+  final List<int> pickNumbers;
+
+  const LottoResultPage(this.lotto, this.pickNumbers);
+
+  @override
+  _LottoResultPageState createState() => _LottoResultPageState();
+}
+
+class _LottoResultPageState extends State<LottoResultPage> {
+
+  int _rank = 0;
+
+  void initResult() {
+    int correctCount = 0;
+    bool isCorrectBonus = false;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo1)) correctCount++;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo2)) correctCount++;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo3)) correctCount++;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo4)) correctCount++;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo5)) correctCount++;
+    if (widget.pickNumbers.contains(widget.lotto.drawNo6)) correctCount++;
+    if(correctCount == 5) {
+      if (widget.pickNumbers.contains(widget.lotto.drawBonus)) isCorrectBonus = true;
+    }
+    if(correctCount == 3) _rank = 5;
+    if(correctCount == 4) _rank = 4;
+    if(correctCount == 5) _rank = 3;
+    if(correctCount == 5 && isCorrectBonus) _rank = 2;
+    if(correctCount == 6) _rank = 1;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initResult();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      title: '직접 입력 당첨 결과',
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        padding: EdgeInsets.only(bottom: 50),
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: LottoWinResultWidget(widget.lotto),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if(_rank > 0) ... [
+                      TextBinggrae('축하합니다!'),
+                      TextBinggrae('$_rank등 당첨되셨습니다.'),
+                    ] else ... [
+                      TextBinggrae('아쉽게도 낙첨 되셨습니다.'),
+                    ]
+                  ],
+                ),
+              ),
+              LottoPickWidget(widget.pickNumbers, index: 0, rank: _rank, color: Color(0xffeeeeee), result: widget.lotto.numbers,),
+            ],
+          ),
+        ),
+      )
     );
   }
 }

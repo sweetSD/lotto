@@ -18,7 +18,9 @@ import 'package:lotto/screens/horoscope.dart';
 import 'package:lotto/screens/lotto.dart';
 import 'package:lotto/screens/lucky.dart';
 import 'package:lotto/screens/map.dart';
+import 'package:lotto/screens/picker.dart';
 import 'package:lotto/screens/store.dart';
+import 'package:lotto/widgets/basescreen.dart';
 import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/dialogs.dart';
 import 'package:lotto/widgets/lotto.dart';
@@ -29,7 +31,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
 MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-  keywords: <String>['lotto', '로또', '대박'],
+  keywords: <String>['lotto', '로또', '대박', '인생', '한방'],
   testDevices: <String>[],
 );
 
@@ -44,7 +46,7 @@ BannerAd bannerAd = BannerAd(
 
 // 직접적으로 접근하지마세요. getInterstitialAd() 함수를 통해서 접근하세요.
 InterstitialAd _interstitialAd;
-List<Function(MobileAdEvent)> interstitialAdCallbacks = [];
+Function(MobileAdEvent) interstitialAdCallbacks;
 
 InterstitialAd getInterstitialAd() {
   if(_interstitialAd == null) {
@@ -58,9 +60,7 @@ InterstitialAd getInterstitialAd() {
           _interstitialAd.dispose();
           _interstitialAd = null;
         }
-        interstitialAdCallbacks.forEach((element) {
-          if(element != null) element(event);
-        });
+        if(interstitialAdCallbacks != null) interstitialAdCallbacks(event);
         print("InterstitialAd event is $event");
       },
     );
@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
     _curDrawNum = calculateLatestDrawNum();
 
     for(int i = 0; i < _curDrawNum; i++) {
-      _drawDates.add(DateTime(2002, 12, 7, 21, 0, 0).add(Duration(days: i * 7)));
+      _drawDates.add(DateTime(2002, 12, 7, 20, 50, 0).add(Duration(days: i * 7)));
     }
 
     _drawDates = _drawDates.reversed.toList();
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
               else
                 print('firebase admob initialize failed.');
             });
-    // bannerAd..load()..show();
+    bannerAd..load()..show();
 
     super.initState();
   }
@@ -121,7 +121,7 @@ class _MainPageState extends State<MainPage> {
         buildDialog(context,
           Container(
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.3,
             decoration: roundBoxDecoration(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -141,9 +141,10 @@ class _MainPageState extends State<MainPage> {
                       Fluttertoast.showToast(msg: 'QR코드 스캔에 카메라 권한이 필요합니다.');
                       return;
                     }
+                    Navigator.pop(context);
                     final scanResult = await scanner.scan();
                     Fluttertoast.showToast(msg: scanResult);
-                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage(scanResult)));
                   },
                 ),
                 ListTile(
@@ -182,6 +183,20 @@ class _MainPageState extends State<MainPage> {
                     }
                   },
                 ),
+                ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.fact_check_rounded),
+                      Space(10),
+                      TextBinggrae('직접 입력하기')
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => NumberPickPage(_drawDates),));
+                  },
+                ),
               ],
             ),
           )
@@ -195,7 +210,12 @@ class _MainPageState extends State<MainPage> {
       centerTitle: true,
       leading: IconButton(
         icon: Icon(FontAwesomeIcons.store, color: Colors.black,),
-        onPressed: () {
+        onPressed: () async {
+          var status = await Permission.location.status;
+          if(status != PermissionStatus.granted && !(await Permission.location.request().isGranted)) {
+            Fluttertoast.showToast(msg: '현재 위치 파악을 위해 위치 권한이 필요합니다.');
+            return;
+          }
           Navigator.push(context, MaterialPageRoute(builder: (context) => MapSample()));
         },
       ),
@@ -207,20 +227,22 @@ class _MainPageState extends State<MainPage> {
     return FutureBuilder<Lotto>(
       future: getLotto(_curDrawNum),
       builder: (context, snapshot) {
-        return Scaffold(
+        return BaseScreen(
           appBar: appbar,
-          body: SingleChildScrollView(
+          body: ListView(
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                if(snapshot.hasData) ... [
-                  LottoWinResultWidget(snapshot.data),
-                ],
-                Space(10),
-                if(snapshot.hasData) ... [
-                  Container(
+            shrinkWrap: true,
+            children: <Widget>[
+              if(snapshot.hasData) ... [
+                AnimatedOpacity(opacity: 1, duration: Duration(milliseconds: 500), child: LottoWinResultWidget(snapshot.data),),
+              ],
+              Space(10),
+              if(snapshot.hasData) ... [
+                AnimatedOpacity(
+                  opacity: 1, 
+                  duration: Duration(milliseconds: 500),
+                  child: Container(
                     height: MediaQuery.of(context).size.height * 0.15,
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     decoration: roundBoxDecoration(),
@@ -251,87 +273,87 @@ class _MainPageState extends State<MainPage> {
                       ],
                     ),
                   ),
-                  Space(10),
-                ],
-                InkWell(
-                  onTap: () {
-                    _dateScrollController = ScrollController(initialScrollOffset: _dateScrollPosition);
-                    _dateScrollController.addListener(() {
-                      _dateScrollPosition = _dateScrollController.offset;
-                    });
-                    showSelectDrawPopup();
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.075,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('회차 선택'),
-                  ),
                 ),
                 Space(10),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LuckyBallPage(),));
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.075,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('행운 번호 확인'),
-                  ),
-                ),
-                Space(10),
-                InkWell(
-                  onTap: () async {
-                    List<List<int>> lottoes = List<List<int>>();
-                    final pd = ProgressDialog(context, type: ProgressDialogType.Download, isDismissible: false);
-                    pd.style(
-                      message: '회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
-                      messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
-                    );
-                    await pd.show();
-                    int count = calculateDrawNum(DateTime.now());
-                    for(int i = 0; i < count; i++) {
-                      pd.update(
-                        message: '${i + 1}회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
-                        messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
-                        progress: i.toDouble(),
-                        maxProgress: count.toDouble(),
-                      );
-                      try {
-                        var lotto = await NetworkUtil().getLottoNumber(i + 1);
-                        lottoes.add([lotto.drawNo1, lotto.drawNo2, lotto.drawNo3, lotto.drawNo4, lotto.drawNo5, lotto.drawNo6]);
-                      } catch(e) {
-                        print(e);
-                        Fluttertoast.showToast(msg: '회차 정보를 불러오는 중 에러가 발생했습니다.');
-                        return;
-                      }
-                    }
-                    await pd.hide();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(lottoes),));
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.075,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('당첨 번호 통계 확인'),
-                  ),
-                ),
-                Space(10),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => HoroscopePage(),));
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.075,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('띠별 운세 확인'),
-                  ),
-                ),
-                Space(50),
               ],
-            ),
+              InkWell(
+                onTap: () {
+                  _dateScrollController = ScrollController(initialScrollOffset: _dateScrollPosition);
+                  _dateScrollController.addListener(() {
+                    _dateScrollPosition = _dateScrollController.offset;
+                  });
+                  showSelectDrawPopup();
+                },
+                child: Container(
+                  height: 45,
+                  alignment: Alignment.center,
+                  decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                  child: TextBinggrae('회차 선택'),
+                ),
+              ),
+              Space(10),
+              InkWell(
+                onTap: () async {
+                  List<List<int>> lottoes = List<List<int>>();
+                  final pd = ProgressDialog(context, type: ProgressDialogType.Download, isDismissible: false);
+                  pd.style(
+                    message: '회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
+                    messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
+                  );
+                  await pd.show();
+                  int count = calculateDrawNum(DateTime.now());
+                  for(int i = 0; i < count; i++) {
+                    pd.update(
+                      message: '${i + 1}회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
+                      messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
+                      progress: i.toDouble(),
+                      maxProgress: count.toDouble(),
+                    );
+                    try {
+                      var lotto = await NetworkUtil().getLottoNumber(i + 1);
+                      lottoes.add([lotto.drawNo1, lotto.drawNo2, lotto.drawNo3, lotto.drawNo4, lotto.drawNo5, lotto.drawNo6]);
+                    } catch(e) {
+                      print(e);
+                      Fluttertoast.showToast(msg: '회차 정보를 불러오는 중 에러가 발생했습니다.');
+                      return;
+                    }
+                  }
+                  await pd.hide();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(lottoes),));
+                },
+                child: Container(
+                  height: 45,
+                  alignment: Alignment.center,
+                  decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                  child: TextBinggrae('당첨 번호 통계 확인'),
+                ),
+              ),
+              Divider(height: 25, thickness: 1, color: Colors.grey[200],),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LuckyBallPage(),));
+                },
+                child: Container(
+                  height: 45,
+                  alignment: Alignment.center,
+                  decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                  child: TextBinggrae('행운 번호 확인'),
+                ),
+              ),
+              // Space(10),
+              // InkWell(
+              //   onTap: () {
+              //     Navigator.push(context, MaterialPageRoute(builder: (context) => HoroscopePage(),));
+              //   },
+              //   child: Container(
+              //     height: 75,
+              //     alignment: Alignment.center,
+              //     decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+              //     child: TextBinggrae('띠별 운세 확인'),
+              //   ),
+              // ),
+              Space(50),
+            ],
           ),
         );
       },
@@ -343,22 +365,10 @@ class _MainPageState extends State<MainPage> {
       var prefs = (await NetworkUtil().preferenceAsync);
       if(!prefs.containsKey('firstSync')) {
         await NetworkUtil().syncLottoResultsFromFirebase();
-        prefs.setBool('firstSync', true);
+        await prefs.setBool('firstSync', true);
       }
       return await NetworkUtil().getLottoNumber(drawNum);
     });
-  }
-
-  int calculateLatestDrawNum() {
-    return calculateDrawNum(DateTime.now());
-  }
-
-  int calculateDrawNum(DateTime date) {
-    DateTime beginDateTime = DateTime(2002, 12, 7, 21, 0, 0);
-
-    Duration diff = date.difference(beginDateTime);
-    int drawNum = ((diff.inDays / 7) + 1).toInt();
-    return drawNum;
   }
 
   void showSelectDrawPopup() {
@@ -402,4 +412,16 @@ class _MainPageState extends State<MainPage> {
     )
     ..show();
   }
+}
+
+int calculateLatestDrawNum() {
+  return calculateDrawNum(DateTime.now());
+}
+
+int calculateDrawNum(DateTime date) {
+  DateTime beginDateTime = DateTime(2002, 12, 7, 20, 50, 0);
+
+  Duration diff = date.difference(beginDateTime);
+  int drawNum = ((diff.inDays / 7) + 1).toInt();
+  return drawNum;
 }
