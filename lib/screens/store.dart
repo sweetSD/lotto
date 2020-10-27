@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lotto/animation/fade.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/network/place.dart';
 import 'package:lotto/widgets/basescreen.dart';
@@ -105,36 +106,39 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => GestureDetector(
-                      onTap: () async {
-                        if(await canLaunch('https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data[index].storeId}')) {
-                          launch('https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data[index].storeId}');
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        decoration: roundBoxDecoration(),
-                        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextBinggrae(data[index].index.toString()),
-                            ),
-                            Expanded(
-                              flex: 8,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextBinggrae(data[index].name),
-                                  TextBinggrae('1등 당첨: ${data[index].winCount}회'),
-                                  TextBinggrae(data[index].address,),
-                                ],
+                    itemBuilder: (context, index) => FadeInOffset(
+                      offset: Offset(0, 50),
+                      child: GestureDetector(
+                        onTap: () async {
+                          if(await canLaunch('https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data[index].storeId}')) {
+                            launch('https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data[index].storeId}');
+                          }
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 100,
+                          decoration: roundBoxDecoration(),
+                          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextBinggrae(data[index].index.toString()),
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                flex: 8,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TextBinggrae(data[index].name),
+                                    TextBinggrae('1등 당첨: ${data[index].winCount}회'),
+                                    TextBinggrae(data[index].address,),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      )
                     ),
                     itemCount: data.length,
                   ),

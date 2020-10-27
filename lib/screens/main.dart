@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +12,6 @@ import 'package:lotto/const.dart';
 import 'package:lotto/network/lotto.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/screens/analyze.dart';
-import 'package:lotto/screens/horoscope.dart';
 import 'package:lotto/screens/lotto.dart';
 import 'package:lotto/screens/lucky.dart';
 import 'package:lotto/screens/map.dart';
@@ -68,6 +65,8 @@ InterstitialAd getInterstitialAd() {
   return _interstitialAd;
 }
 
+DateTime beginDateTime = DateTime(2002, 12, 7, 20, 55, 0);
+
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
 
@@ -92,7 +91,7 @@ class _MainPageState extends State<MainPage> {
     _curDrawNum = calculateLatestDrawNum();
 
     for(int i = 0; i < _curDrawNum; i++) {
-      _drawDates.add(DateTime(2002, 12, 7, 20, 50, 0).add(Duration(days: i * 7)));
+      _drawDates.add(beginDateTime.add(Duration(days: i * 7)));
     }
 
     _drawDates = _drawDates.reversed.toList();
@@ -106,7 +105,7 @@ class _MainPageState extends State<MainPage> {
               else
                 print('firebase admob initialize failed.');
             });
-    //bannerAd..load()..show();
+    bannerAd..load()..show();
 
     super.initState();
   }
@@ -267,6 +266,7 @@ class _MainPageState extends State<MainPage> {
     return FutureBuilder<Lotto>(
       future: getLotto(_curDrawNum),
       builder: (context, snapshot) {
+        var data = snapshot.data;
         return BaseScreen(
           appBar: appbar,
           body: SingleChildScrollView(
@@ -274,48 +274,46 @@ class _MainPageState extends State<MainPage> {
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Column(
               children: <Widget> [
-                if(snapshot.hasData) ... [
-                  AnimatedOpacity(opacity: 1, duration: Duration(milliseconds: 500), child: LottoWinResultWidget(snapshot.data),),
-                ],
+                AnimatedOpacity(opacity: snapshot.hasData ? 1 : 0, duration: Duration(milliseconds: 750), child: LottoWinResultWidget(snapshot.hasData ? data : Lotto(
+                  '', 0, beginDateTime, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                )),),
                 Space(10),
-                if(snapshot.hasData) ... [
-                  AnimatedOpacity(
-                    opacity: 1, 
-                    duration: Duration(milliseconds: 500),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: roundBoxDecoration(),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Expanded(child: TextBinggrae('총 판매금액', color: Colors.grey, align: TextAlign.left,),),
-                              Expanded(child: TextBinggrae(currencyFormat.format(snapshot.data.totalSellAmount) + '원', align: TextAlign.right,),),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Expanded(child: TextBinggrae('1등 당첨금액', color: Colors.grey, align: TextAlign.left,),),
-                              Expanded(child: TextBinggrae(currencyFormat.format(snapshot.data.winnerAmount) + '원', align: TextAlign.right,),),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Expanded(child: TextBinggrae('1등 당첨자', color: Colors.grey, align: TextAlign.left,),),
-                              Expanded(child: TextBinggrae(currencyFormat.format(snapshot.data.winnerCount) + '명', align: TextAlign.right,),),
-                            ],
-                          ),
-                        ],
-                      ),
+                AnimatedOpacity(
+                  opacity: snapshot.hasData ? 1 : 0, 
+                  duration: Duration(milliseconds: 750),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: roundBoxDecoration(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Expanded(child: TextBinggrae('총 판매금액', color: Colors.grey, align: TextAlign.left,),),
+                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.totalSellAmount) + '원' : '집계중', align: TextAlign.right,),),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Expanded(child: TextBinggrae('1등 당첨금액', color: Colors.grey, align: TextAlign.left,),),
+                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerAmount) + '원' : '집계중', align: TextAlign.right,),),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Expanded(child: TextBinggrae('1등 당첨자', color: Colors.grey, align: TextAlign.left,),),
+                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerCount) + '명' : '집계중', align: TextAlign.right,),),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  Space(10),
-                ],
+                ),
+                Space(10),
                 InkWell(
                   onTap: () {
                     _dateScrollController = ScrollController(initialScrollOffset: _dateScrollPosition);
@@ -472,14 +470,11 @@ int calculateLatestDrawNum() {
 }
 
 int calculateDrawNum(DateTime date) {
-  DateTime beginDateTime = DateTime(2002, 12, 7, 20, 50, 0);
-
   Duration diff = date.difference(beginDateTime);
   int drawNum = ((diff.inDays / 7) + 1).toInt();
   return drawNum;
 }
 
 DateTime calculateDateTime(int drawNum) {
-  DateTime beginDateTime = DateTime(2002, 12, 7, 20, 50, 0);
   return beginDateTime.add(Duration(days: ((drawNum - 1) * 7).toInt()));
 }
