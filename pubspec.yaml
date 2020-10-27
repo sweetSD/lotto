@@ -48,6 +48,7 @@ dependencies:
   flutter_google_places: ^0.2.6
   geolocator: ^6.0.0
   html: ^0.14.0+4
+  flutter_local_notifications: ^2.0.1
   
 dev_dependencies:
   flutter_test:

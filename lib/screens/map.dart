@@ -12,15 +12,19 @@ import 'package:lotto/const.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/screens/main.dart';
 import 'package:lotto/widgets/basescreen.dart';
+import 'package:lotto/widgets/const.dart';
+import 'package:lotto/widgets/dialogs.dart';
+import 'package:lotto/widgets/text.dart';
+import 'package:lotto/widgets/widgets.dart';
 
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: googleMapApiKey);
 
-class MapSample extends StatefulWidget {
+class NearStoreMapPage extends StatefulWidget {
   @override
-  State<MapSample> createState() => MapSampleState();
+  _NearStoreMapPageState createState() => _NearStoreMapPageState();
 }
 
-class MapSampleState extends State<MapSample> {
+class _NearStoreMapPageState extends State<NearStoreMapPage> {
   Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -90,7 +94,7 @@ class MapSampleState extends State<MapSample> {
             ),
             infoWindow: InfoWindow(title: element.placeName, snippet: element.addressName),
             onTap: () {
-              //_onMarkerTapped(markerId);
+              _onMarkerTapped(markerId);
             },
           );
           _markers[markerId] = marker;
@@ -102,5 +106,183 @@ class MapSampleState extends State<MapSample> {
 
   void _onMarkerTapped(MarkerId markerId) {
 
+  }
+}
+
+List<String> nationSido = [
+  '서울',
+  '경기',
+  '부산',
+  '대구',
+  '인천',
+  '대전',
+  '울산',
+  '강원',
+  '충북',
+  '충남',
+  '광주',
+  '전북',
+  '전남',
+  '경북',
+  '경남',
+  '제주',
+  '세종',
+];
+
+class NationWideStorePage extends StatefulWidget {
+  NationWideStorePage({Key key}) : super(key: key);
+
+  @override
+  _NationWideStorePageState createState() => _NationWideStorePageState();
+}
+
+class _NationWideStorePageState extends State<NationWideStorePage> {
+
+  String _sido = '서울';
+  String _gugun = '강남구';
+
+  List<String> _guguns = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      title: '전국 판매점 찾기',
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            Container(
+              height: 100,
+              decoration: roundBoxDecoration(),
+              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextBinggrae('지역 선택'),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: GestureDetector(
+                          onTap: () {
+                            showSidoSelectPopup();
+                          },
+                          child: Container(
+                            height: 30,
+                            margin: EdgeInsets.symmetric(horizontal: 12),
+                            alignment: Alignment.center,
+                            decoration: roundBoxDecoration(),
+                            child: TextBinggrae(_sido),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: GestureDetector(
+                          onTap: () {
+                            showGugunSelectPopup();
+                          },
+                          child: Container(
+                            height: 30,
+                            margin: EdgeInsets.symmetric(horizontal: 12),
+                            alignment: Alignment.center,
+                            decoration: roundBoxDecoration(),
+                            child: TextBinggrae(_gugun),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showSidoSelectPopup() {
+    buildDialog(context, 
+      ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.8,
+          color: Colors.transparent,
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () async {
+                  var list = await NetworkUtil().getGugun(nationSido[index]);
+                  print(list);
+                  setState(() {
+                    _guguns = list;
+                    if(_guguns.length > 0) _gugun = _guguns[0]; else _gugun = '';
+                    _sido = nationSido[index];
+                    Navigator.pop(context);
+                  });
+                },
+                child: Container(
+                  color: index % 2 == 0 ? Colors.white : Colors.grey[200], 
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      TextBinggrae(nationSido[index])
+                    ],
+                  ),
+                ),
+              );
+            },
+            itemCount: nationSido.length,
+          ),
+        ),
+      )
+    )
+    ..show();
+  }
+
+  void showGugunSelectPopup() {
+    buildDialog(context, 
+      ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.8,
+          color: Colors.transparent,
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _gugun = _guguns[index];
+                    Navigator.pop(context);
+                  });
+                },
+                child: Container(
+                  color: index % 2 == 0 ? Colors.white : Colors.grey[200], 
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      TextBinggrae(_guguns[index])
+                    ],
+                  ),
+                ),
+              );
+            },
+            itemCount: _guguns.length,
+          ),
+        ),
+      )
+    )
+    ..show();
   }
 }

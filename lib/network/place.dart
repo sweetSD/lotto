@@ -55,3 +55,13 @@ class PlaceResponse {
 
   PlaceResponse(this.places, this.isEnd);
 }
+
+class LottoStore {
+  final num index;
+  final String name;
+  final num winCount;
+  final String address;
+  final num storeId;
+
+  LottoStore(this.index, this.name, this.winCount, this.address, this.storeId);
+}

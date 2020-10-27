@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'lotto.g.dart';
@@ -48,7 +50,16 @@ class Lotto {
   @JsonKey(name: 'bnusNo')
   final num drawBonus;
 
-  Lotto(this.result, this.drawNumber, this.drawAt, this.totalSellAmount, this.winnerTotalAmount, this.winnerAmount, this.winnerCount, this.drawNo1, this.drawNo2, this.drawNo3, this.drawNo4, this.drawNo5, this.drawNo6, this.drawBonus);
+  @JsonKey(ignore: true)
+  num winnerAutoCount;
+
+  @JsonKey(ignore: true)
+  num winnerManualCount;
+
+  @JsonKey(ignore: true)
+  num winnerSemiAutoCount;
+
+  Lotto(this.result, this.drawNumber, this.drawAt, this.totalSellAmount, this.winnerTotalAmount, this.winnerAmount, this.winnerCount, this.drawNo1, this.drawNo2, this.drawNo3, this.drawNo4, this.drawNo5, this.drawNo6, this.drawBonus, [this.winnerAutoCount = 0, this.winnerManualCount = 0, this.winnerSemiAutoCount = 0]);
 
   List<int> get numbers => [drawNo1, drawNo2, drawNo3, drawNo4, drawNo5, drawNo6];
 
@@ -64,12 +75,19 @@ class LottoPick {
   final List<int> pickNumbers;
 
   const LottoPick(this.result, this.pickNumbers);
+
+  static fromJson(Map<String, dynamic> json) => LottoPick(json['result'] as int, List<int>.from(json['pickNumbers']));
+  toJson() => { 'result': result, 'pickNumbers': pickNumbers };
 }
 
 class LottoQRResult {
   final Lotto lotto;
   final int prize;
   final List<LottoPick> picks;
+  final String url;
 
-  const LottoQRResult(this.lotto, this.prize, this.picks);
+  const LottoQRResult(this.lotto, this.prize, this.picks, this.url);
+
+  static fromJson(Map<String, dynamic> json) => LottoQRResult(Lotto.fromJson(json['lotto']), json['prize'], List.from(jsonDecode(json['picks'])).map<LottoPick>((e) => LottoPick.fromJson(e)).toList(), json['url']);
+  toJson() => { 'lotto': lotto.toJson(), 'prize': prize, 'picks': jsonEncode(picks), 'url': url };
 }

@@ -21,6 +21,7 @@ class TextBinggrae extends StatelessWidget {
   final TextAlign align;
   final TextOverflow overflow;
   final List<Shadow> shadows;
+  final int maxLines;
 
   const TextBinggrae(this.text, {
     this.color = Colors.black, 
@@ -30,6 +31,7 @@ class TextBinggrae extends StatelessWidget {
     this.align = TextAlign.center,
     this.overflow = TextOverflow.ellipsis,
     this.shadows = const [],
+    this.maxLines,
   });
 
   @override
@@ -38,6 +40,7 @@ class TextBinggrae extends StatelessWidget {
       text,
       textAlign: align,
       overflow: overflow,
+      maxLines: maxLines,
       style: TextStyle(
         color: color,
         fontSize: size,

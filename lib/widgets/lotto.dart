@@ -10,7 +10,9 @@ class LottoWinResultWidget extends StatelessWidget {
 
   final Lotto lotto;
 
-  const LottoWinResultWidget(this.lotto, {Key key}) : super(key: key);
+  final bool useDecoration;
+
+  const LottoWinResultWidget(this.lotto, {Key key, this.useDecoration = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class LottoWinResultWidget extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.21,
       padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.03 ),
-      decoration: roundBoxDecoration(),
+      decoration: useDecoration ? roundBoxDecoration() : null,
       child: Column(
         children: <Widget>[
           Row(

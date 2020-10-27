@@ -6,8 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:lotto/network/lotto.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/widgets/basescreen.dart';
+import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/lotto.dart';
 import 'package:lotto/widgets/text.dart';
+
+final String qrBaseUrl = 'https://m.dhlottery.co.kr/qr.do?method=winQr&v=';
 
 class LottoQRResultPage extends StatefulWidget {
 
@@ -23,9 +26,32 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
 
   final AsyncMemoizer<LottoQRResult> _asyncMemoizer = AsyncMemoizer<LottoQRResult>();
 
+  List<LottoQRResult> _qrResults = [];
+
   Future<LottoQRResult> getQRCodeResult() {
     return _asyncMemoizer.runOnce(() async {
-      return NetworkUtil().getLottoQRCodeResult(widget.qrCodeUrl);
+      LottoQRResult result = await NetworkUtil().getLottoQRCodeResult(qrBaseUrl + widget.qrCodeUrl.split('v=')[1]);
+
+      var prefs = await NetworkUtil().preferenceAsync;
+      if(prefs.containsKey('qrResults')) {
+        var resultStrings = prefs.getStringList('qrResults');
+        resultStrings.forEach((element) {
+          _qrResults.add(LottoQRResult.fromJson(jsonDecode(element)));
+        });
+      }
+
+      if(result != null) {
+        if(_qrResults.any((element) => element.url == result.url)) _qrResults.removeWhere((element) => element.url == result.url);
+        _qrResults.add(result);
+
+        List<String> qrStrings = [];
+        _qrResults.forEach((element) {
+          qrStrings.add(jsonEncode(element));
+        });
+        prefs.setStringList('qrResults', qrStrings);
+      }
+
+      return result;
     });
   }
 
@@ -176,6 +202,99 @@ class _LottoResultPageState extends State<LottoResultPage> {
             ],
           ),
         ),
+      )
+    );
+  }
+}
+
+class QRResultPage extends StatefulWidget {
+
+  const QRResultPage();
+
+  @override
+  _QRResultPageeState createState() => _QRResultPageeState();
+}
+
+class _QRResultPageeState extends State<QRResultPage> {
+
+  AsyncMemoizer<List<LottoQRResult>> _asyncMemoizer = AsyncMemoizer<List<LottoQRResult>>();
+
+  Future<List<LottoQRResult>> getQRResults() async {
+    return _asyncMemoizer.runOnce(() async {
+      List<LottoQRResult> result = [];
+      var prefs = await NetworkUtil().preferenceAsync;
+      if(prefs.containsKey('qrResults')) {
+        var strList = prefs.getStringList('qrResults');
+        strList.forEach((element) {
+          result.add(LottoQRResult.fromJson(jsonDecode(element)));
+        });
+      }
+      print(result.length);
+      print(result);
+      return result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      title: 'QR코드 기록',
+      body: FutureBuilder<List<LottoQRResult>>(
+        future: getQRResults(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData) {
+            var data = snapshot.data;
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.only(bottom: 50),
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.only(top: 12),
+                          decoration: roundBoxDecoration(),
+                          child: InkWell(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage(data[index].url),)),
+                            child: Column(
+                              children: [
+                                if(data[index].lotto != null) ... [
+                                  data[index].prize > 0 ? TextBinggrae('${data[index].prize}원 당첨되셨습니다.') : TextBinggrae('아쉽지만, 낙첨되셨습니다.'),
+                                  LottoWinResultWidget(data[index].lotto, useDecoration: false),
+
+                                ] else ... [
+                                  TextBinggrae('추첨이 진행되지 않았습니다.\n클릭하여 확인해보세요.'),
+                                ]
+                                
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: data.length,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.only(bottom: 50),
+              child: Center(
+                child: TextBinggrae('저장된 QR코드 결과가 없습니다.'),
+              ),
+            );
+          }
+        },
       )
     );
   }
