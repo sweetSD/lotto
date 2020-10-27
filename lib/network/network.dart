@@ -31,7 +31,10 @@ class NetworkUtil {
   Future<Lotto> getLottoNumber(int drawNo) async {
     String key = 'lotto_$drawNo';
     if(_preferences == null) _preferences = await SharedPreferences.getInstance();
-    if(_preferences.containsKey(key)) { return Future<Lotto>.value(Lotto.fromJson(convert.jsonDecode(_preferences.getString(key)))); }
+    if(_preferences.containsKey(key)) { 
+      var lotto = Lotto.fromJson(convert.jsonDecode(_preferences.getString(key)));
+      if(lotto.totalSellAmount != 0) return Future<Lotto>.value(lotto);
+    }
     var response = await http.get(_baseUrl + '/common.do?method=getLottoNumber&drwNo=$drawNo');
     if(response.statusCode == 200) {
       Lotto lotto = Lotto.fromJson(convert.jsonDecode(response.body));
