@@ -239,7 +239,7 @@ class NetworkUtil {
     return Future<List<String>>.error([]);
   }
 
-    // 주어진 QR코드 인싱된 웹사이트 링크에서 결과를 파싱합니다.
+  // 로또 1등 당첨 판매점을 조회합니다.
   Future<List<LottoStore>> getLottoTopStoreRank([int page = 1, int rank = 1]) async {
     List<LottoStore> result = [];
     try {
@@ -260,5 +260,30 @@ class NetworkUtil {
       print('error - ' + e);
     }
     return Future<List<LottoStore>>.error(result);
+  }
+
+  // 로또 당첨 번호 통계를 조회합니다. (srchType - 1 : 보너스 포함 / 0 : 보너스 미포함)
+  Future<List<int>> getLottoBallStat({int sttDrwNo = 1, int edDrwNo = 934, int srchType = 1}) async {
+    List<int> result = List<int>(45);
+    try {
+      var response = await http.get('https://dhlottery.co.kr/gameResult.do?method=statByNumber&sttDrwNo=${sttDrwNo}&edDrwNo=${edDrwNo}&srchType=${srchType}');
+      if(response.statusCode == 200) {
+        dom.Document document = parser.parse(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
+
+        Clipboard.setData(ClipboardData(text: document.text ));
+
+        var listRoot = document.getElementById('printTarget').children[3];
+
+        for(int i = 0; i < listRoot.children.length; i++) {
+          var ballCount = int.tryParse(listRoot.children[i].children[2].text);
+          result[i] = ballCount;
+        }
+
+        return Future<List<int>>.value(result);
+      }
+    } catch (e) {
+      print('error - ' + e);
+    }
+    return Future<List<int>>.error(result);
   }
 }

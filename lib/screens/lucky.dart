@@ -50,7 +50,7 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
         IconButton(
           icon: Icon(FontAwesomeIcons.chartBar, color: Colors.black,),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(_luckyNums),));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(luckyBalls: _luckyNums),));
           },
         )
       ],
@@ -115,7 +115,7 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                     offset: Offset(0, 10),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: 75,
+                      height: MediaQuery.of(context).size.height * 0.125,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[

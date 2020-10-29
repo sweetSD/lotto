@@ -332,32 +332,7 @@ class _MainPageState extends State<MainPage> {
                 Space(10),
                 InkWell(
                   onTap: () async {
-                    List<List<int>> lottoes = List<List<int>>();
-                    final pd = ProgressDialog(context, type: ProgressDialogType.Download, isDismissible: false);
-                    pd.style(
-                      message: '회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
-                      messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
-                    );
-                    await pd.show();
-                    int count = calculateDrawNum(DateTime.now());
-                    for(int i = 0; i < count; i++) {
-                      pd.update(
-                        message: '${i + 1}회차 정보를 불러오고 있습니다.\n처음일 경우 약간의 시간이 소요됩니다.',
-                        messageTextStyle: TextStyle(fontFamily: 'Binggrae', fontSize: 12),
-                        progress: i.toDouble(),
-                        maxProgress: count.toDouble(),
-                      );
-                      try {
-                        var lotto = await NetworkUtil().getLottoNumber(i + 1);
-                        lottoes.add([lotto.drawNo1, lotto.drawNo2, lotto.drawNo3, lotto.drawNo4, lotto.drawNo5, lotto.drawNo6]);
-                      } catch(e) {
-                        print(e);
-                        Fluttertoast.showToast(msg: '회차 정보를 불러오는 중 에러가 발생했습니다.');
-                        return;
-                      }
-                    }
-                    await pd.hide();
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(lottoes),));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(drawDates: _drawDates,),));
                   },
                   child: Container(
                     height: 45,
@@ -393,13 +368,13 @@ class _MainPageState extends State<MainPage> {
                 // Space(10),
                 // InkWell(
                 //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (context) => HoroscopePage(),));
+
                 //   },
                 //   child: Container(
-                //     height: 75,
+                //     height: 45,
                 //     alignment: Alignment.center,
-                //     decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                //     child: TextBinggrae('띠별 운세 확인'),
+                //     decoration: roundBoxDecoration().copyWith(color: Colors.cyan[50]),
+                //     child: TextBinggrae('개발자에게 로또 후원하기'),
                 //   ),
                 // ),
                 Space(50),

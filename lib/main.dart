@@ -56,11 +56,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '인생 로또 - 로또 추첨기, 당첨 확인',
+      title: '인생 로또 - 행운 번호, 당첨 확인, 당첨 통계',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system, 
       home: MainPage(),
     );
   }

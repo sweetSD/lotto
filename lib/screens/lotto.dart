@@ -242,7 +242,7 @@ class _QRResultPageeState extends State<QRResultPage> {
       body: FutureBuilder<List<LottoQRResult>>(
         future: getQRResults(),
         builder: (context, snapshot) {
-          if(snapshot.hasData) {
+          if(snapshot.hasData && snapshot.data.length > 0) {
             var data = snapshot.data;
             return Container(
               width: MediaQuery.of(context).size.width,
@@ -290,7 +290,7 @@ class _QRResultPageeState extends State<QRResultPage> {
               height: MediaQuery.of(context).size.height,
               padding: EdgeInsets.only(bottom: 50),
               child: Center(
-                child: TextBinggrae('저장된 QR코드 결과가 없습니다.'),
+                child: TextBinggrae('저장된 QR코드가 없습니다.\n앱에서 QR코드를 스캔하면 자동으로 등록됩니다.'),
               ),
             );
           }
