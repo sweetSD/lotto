@@ -44,7 +44,7 @@ dependencies:
   firebase_database: ^4.1.0
   firebase_admob: ^0.10.0+1
   device_info: ^0.4.2+8
-  google_maps_flutter: ^1.0.2
+  google_maps_flutter: ^1.0.6
   flutter_google_places: ^0.2.6
   geolocator: ^6.0.0
   html: ^0.14.0+4

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lotto/animation/fade.dart';
 import 'package:lotto/const.dart';
 import 'package:lotto/network/lotto.dart';
 import 'package:lotto/network/network.dart';
@@ -314,55 +315,75 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 Space(10),
-                InkWell(
-                  onTap: () {
-                    _dateScrollController = ScrollController(initialScrollOffset: _dateScrollPosition);
-                    _dateScrollController.addListener(() {
-                      _dateScrollPosition = _dateScrollController.offset;
-                    });
-                    showSelectDrawPopup();
-                  },
-                  child: Container(
-                    height: 45,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('회차 선택'),
+                FadeInOffset(
+                  delayInMilisecond: 0,
+                  offset: Offset(0, 50),
+                  child: InkWell(
+                    onTap: () {
+                      _dateScrollController = ScrollController(initialScrollOffset: _dateScrollPosition);
+                      _dateScrollController.addListener(() {
+                        _dateScrollPosition = _dateScrollController.offset;
+                      });
+                      showSelectDrawPopup();
+                    },
+                    child: Container(
+                      height: 45,
+                      alignment: Alignment.center,
+                      decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                      child: TextBinggrae('회차 선택'),
+                    ),
                   ),
                 ),
                 Space(10),
-                InkWell(
-                  onTap: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(drawDates: _drawDates,),));
-                  },
-                  child: Container(
-                    height: 45,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('당첨 번호 통계 확인'),
+                FadeInOffset(
+                  delayInMilisecond: 150,
+                  offset: Offset(0, 50),
+                  child: InkWell(
+                    onTap: () async {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(drawDates: _drawDates,),));
+                    },
+                    child: Container(
+                      height: 45,
+                      alignment: Alignment.center,
+                      decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                      child: TextBinggrae('당첨 번호 통계 확인'),
+                    ),
                   ),
                 ),
-                Divider(height: 25, thickness: 1, color: Colors.grey[200],),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LuckyBallPage(),));
-                  },
-                  child: Container(
-                    height: 45,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('행운 번호 확인'),
+                FadeInOffset(
+                  delayInMilisecond: 300,
+                  offset: Offset(0, 50),
+                  child: Divider(height: 25, thickness: 1, color: Colors.grey[200],),
+                ),
+                FadeInOffset(
+                  delayInMilisecond: 450,
+                  offset: Offset(0, 50),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LuckyBallPage(),));
+                    },
+                    child: Container(
+                      height: 45,
+                      alignment: Alignment.center,
+                      decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                      child: TextBinggrae('행운 번호 확인'),
+                    ),
                   ),
                 ),
                 Space(10),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => QRResultPage(),));
-                  },
-                  child: Container(
-                    height: 45,
-                    alignment: Alignment.center,
-                    decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
-                    child: TextBinggrae('QR코드 기록'),
+                FadeInOffset(
+                  delayInMilisecond: 600,
+                  offset: Offset(0, 50),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => QRResultPage(),));
+                    },
+                    child: Container(
+                      height: 45,
+                      alignment: Alignment.center,
+                      decoration: roundBoxDecoration().copyWith(color: Colors.grey[200]),
+                      child: TextBinggrae('QR코드 기록'),
+                    ),
                   ),
                 ),
                 // Space(10),
@@ -388,11 +409,13 @@ class _MainPageState extends State<MainPage> {
 
   Future<Lotto> getLotto(int drawNum) {
     return _asyncMemoizer.runOnce(() async {
-      var prefs = (await NetworkUtil().preferenceAsync);
-      if(!prefs.containsKey('firstSync')) {
-        await NetworkUtil().syncLottoResultsFromFirebase();
-        await prefs.setBool('firstSync', true);
-      }
+      Future.delayed(Duration.zero, () async {
+        var prefs = (await NetworkUtil().preferenceAsync);
+        if(!prefs.containsKey('firstSync')) {
+          await NetworkUtil().syncLottoResultsFromFirebase();
+          await prefs.setBool('firstSync', true);
+        }
+      });
       return await NetworkUtil().getLottoNumber(drawNum);
     });
   }

@@ -13,11 +13,14 @@ final androidWeeklyNoti = AndroidNotificationDetails(
 );
 
 Future<void> scheduleWeeklyNotification() async {
+  var notifications = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  if(notifications.length > 0) return;
+  
   await flutterLocalNotificationsPlugin.zonedSchedule(
     1,
     '아직 로또 구매 안 하셨나요?',
     '오후 8시 45분에 로또 추첨이 진행됩니다. 오늘도 대박을 노려봅시다.',
-    _nextInstanceOfSaturday(12, 0, 0),
+    _nextInstanceOfSaturday(12 - 9, 0, 0),
     NotificationDetails(
       android: androidWeeklyNoti,
     ),
@@ -31,7 +34,7 @@ Future<void> scheduleWeeklyNotification() async {
     2,
     '로또 추첨이 진행되었습니다.',
     '어서 확인해 보세요!',
-    _nextInstanceOfSaturday(20, 55, 0),
+    _nextInstanceOfSaturday(20 - 9, 55, 0),
     NotificationDetails(
       android: androidWeeklyNoti,
     ),
