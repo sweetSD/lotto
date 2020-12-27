@@ -1,4 +1,4 @@
-package com.sweetSD.lifelotto
+package com.sweetSD.klotto
 
 import android.os.Bundle
 import io.flutter.app.FlutterActivity
