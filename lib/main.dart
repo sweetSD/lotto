@@ -14,6 +14,7 @@ FirebaseApp firebaseApp;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   if(Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
     var build = await deviceInfoPlugin.androidInfo;
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '인생 로또 - 행운 번호, 당첨 확인, 당첨 통계',
+      title: 'K-로또 ~ 행운 번호, 당첨 확인, 당첨 통계',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

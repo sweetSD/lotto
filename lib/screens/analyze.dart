@@ -64,12 +64,11 @@ class _AnalyzePageState extends State<AnalyzePage> {
             if(_maxCount < result[i]) _maxCount = result[i];
             _lottoBallStats[i].value = result[i];
           }
-
       } else {
         for(int i = 0; i < widget.luckyBalls.length; i++) {
           for(int j = 0; j < widget.luckyBalls[i].length; j++) {
-            _lottoBallStats[widget.luckyBalls[i][j]].value++;
-            if(_maxCount < _lottoBallStats[widget.luckyBalls[i][j]].value) _maxCount = _lottoBallStats[widget.luckyBalls[i][j]].value;
+            _lottoBallStats[widget.luckyBalls[i][j] - 1].value++;
+            if(_maxCount < _lottoBallStats[widget.luckyBalls[i][j] - 1].value) _maxCount = _lottoBallStats[widget.luckyBalls[i][j] - 1].value;
           }
         }
       }
@@ -299,7 +298,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height - 200,
         alignment: Alignment.center,
-        child: TextBinggrae('데이터를 불러오고 있습니다. :)'),
+        child: TextBinggrae('데이터를 불러오고 있습니다. :)\n\n추첨 직후에는 로딩이 느릴 수 있습니다.\n\n- 잠시만 기다려주세요.. -'),
       );
     }
   }

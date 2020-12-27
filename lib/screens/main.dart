@@ -34,7 +34,8 @@ MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
 );
 
 BannerAd bannerAd = BannerAd(
-  adUnitId: BannerAd.testAdUnitId,
+  //adUnitId: BannerAd.testAdUnitId,
+  adUnitId: admobBannerID,
   size: AdSize.banner,
   targetingInfo: targetingInfo,
   listener: (MobileAdEvent event) {
@@ -49,7 +50,8 @@ Function(MobileAdEvent) interstitialAdCallbacks;
 InterstitialAd getInterstitialAd() {
   if(_interstitialAd == null) {
     _interstitialAd = InterstitialAd(
-      adUnitId: InterstitialAd.testAdUnitId,
+      //adUnitId: InterstitialAd.testAdUnitId,
+      adUnitId: admobInterstitialID,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.failedToLoad) {
@@ -100,13 +102,13 @@ class _MainPageState extends State<MainPage> {
     FirebaseAdMob.instance.initialize(
         appId: Platform.isIOS
             ? admobiOSTestAppID
-            : admobAndroidTestAppID).then((value) {
+            : admobAppID).then((value) {
               if(value)
                 print('firebase admob initialize success.');
               else
                 print('firebase admob initialize failed.');
             });
-    bannerAd..load()..show();
+    //bannerAd..load()..show();
 
     super.initState();
   }
@@ -143,7 +145,7 @@ class _MainPageState extends State<MainPage> {
                     }
                     Navigator.pop(context);
                     final scanResult = await scanner.scan();
-                    Fluttertoast.showToast(msg: scanResult);
+                    //Fluttertoast.showToast(msg: scanResult);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage(scanResult)));
                   },
                 ),
@@ -205,7 +207,13 @@ class _MainPageState extends State<MainPage> {
     );
 
     final appbar = AppBar(
-      title: TextBinggrae('인생로또', size: 20,),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextBinggrae('K - ', size: 25, color: Color(0xffffA401), height: 1.1,),
+          TextBinggrae('로또', size: 25, color: Color(0xff00B0F0), height: 1.1,),
+        ],
+      ),
       backgroundColor: Colors.white,
       centerTitle: true,
       leading: IconButton(
@@ -275,6 +283,7 @@ class _MainPageState extends State<MainPage> {
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Column(
               children: <Widget> [
+                Space(10),
                 AnimatedOpacity(opacity: snapshot.hasData ? 1 : 0, duration: Duration(milliseconds: 750), child: LottoWinResultWidget(snapshot.hasData ? data : Lotto(
                   '', 0, beginDateTime, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 )),),
@@ -398,7 +407,7 @@ class _MainPageState extends State<MainPage> {
                 //     child: TextBinggrae('개발자에게 로또 후원하기'),
                 //   ),
                 // ),
-                Space(50),
+                Space(60),
               ],
             )
           ),
