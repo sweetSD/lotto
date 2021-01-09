@@ -108,7 +108,7 @@ class _MainPageState extends State<MainPage> {
               else
                 print('firebase admob initialize failed.');
             });
-    //bannerAd..load()..show();
+    bannerAd..load()..show();
 
     super.initState();
   }
@@ -284,45 +284,61 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: <Widget> [
                 Space(10),
-                AnimatedOpacity(opacity: snapshot.hasData ? 1 : 0, duration: Duration(milliseconds: 750), child: LottoWinResultWidget(snapshot.hasData ? data : Lotto(
-                  '', 0, beginDateTime, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                )),),
-                Space(10),
-                AnimatedOpacity(
-                  opacity: snapshot.hasData ? 1 : 0, 
-                  duration: Duration(milliseconds: 750),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: roundBoxDecoration(),
+                if (snapshot.hasData) ... [
+                  AnimatedOpacity(opacity: snapshot.hasData ? 1 : 0, duration: Duration(milliseconds: 750), child: LottoWinResultWidget(snapshot.hasData ? data : Lotto(
+                    '', 0, beginDateTime, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  )),),
+                  Space(10),
+                  AnimatedOpacity(
+                    opacity: snapshot.hasData ? 1 : 0, 
+                    duration: Duration(milliseconds: 750),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: roundBoxDecoration(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Expanded(child: TextBinggrae('총 판매금액', color: Colors.grey, align: TextAlign.left,),),
+                              Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.totalSellAmount) + '원' : '집계중', align: TextAlign.right,),),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Expanded(child: TextBinggrae('1등 당첨금액', color: Colors.grey, align: TextAlign.left,),),
+                              Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerAmount) + '원' : '집계중', align: TextAlign.right,),),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Expanded(child: TextBinggrae('1등 당첨자', color: Colors.grey, align: TextAlign.left,),),
+                              Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerCount) + '명' : '집계중', align: TextAlign.right,),),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ... [
+                  Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.25,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Expanded(child: TextBinggrae('총 판매금액', color: Colors.grey, align: TextAlign.left,),),
-                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.totalSellAmount) + '원' : '집계중', align: TextAlign.right,),),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Expanded(child: TextBinggrae('1등 당첨금액', color: Colors.grey, align: TextAlign.left,),),
-                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerAmount) + '원' : '집계중', align: TextAlign.right,),),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Expanded(child: TextBinggrae('1등 당첨자', color: Colors.grey, align: TextAlign.left,),),
-                            Expanded(child: TextBinggrae((snapshot.hasData && data.totalSellAmount > 0) ? currencyFormat.format(data.winnerCount) + '명' : '집계중', align: TextAlign.right,),),
-                          ],
-                        ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        Space(30),
+                        TextBinggrae('최근 당첨 번호를 로딩중입니다.\n잠시만 기다려주세요.')
                       ],
                     ),
                   ),
-                ),
+                ],
                 Space(10),
                 FadeInOffset(
                   delayInMilisecond: 0,
@@ -418,7 +434,7 @@ class _MainPageState extends State<MainPage> {
 
   Future<Lotto> getLotto(int drawNum) {
     return _asyncMemoizer.runOnce(() async {
-      Future.delayed(Duration.zero, () async {
+      await Future.delayed(Duration.zero, () async {
         var prefs = (await NetworkUtil().preferenceAsync);
         if(!prefs.containsKey('firstSync')) {
           await NetworkUtil().syncLottoResultsFromFirebase();

@@ -13,6 +13,7 @@ import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/lotto.dart';
 import 'package:lotto/widgets/text.dart';
 import 'package:lotto/widgets/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LuckyBallPage extends StatefulWidget {
   LuckyBallPage({Key key}) : super(key: key);
@@ -24,6 +25,7 @@ class LuckyBallPage extends StatefulWidget {
 class _LuckyBallPageState extends State<LuckyBallPage> {
 
   List<List<int>> _luckyNums = [];
+  final String generatedLuckyNumCountKey = 'generatedLuckyNumbers';
 
   @override
   void initState() {
@@ -103,17 +105,18 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
             if(_luckyNums.length > 1) ... [
               Divider(height: 30, thickness: 1,),
               FadeInOffset(
-                delayInMilisecond: 500,
+                delayInMilisecond: 250,
+                offset: Offset(0, 10),
                 child: TextBinggrae('행운 번호 기록'),
               ),
               Space(15),
-              ListView.separated(
-                separatorBuilder: (context, index) => FadeInOffset(delayInMilisecond: 750 + index * 150, offset: Offset(0, 10), child: Divider(thickness: 1, height: 1, color: Color(0xffcccccc),),),
-                itemBuilder: (context, index) {
-                  return FadeInOffset(
-                    delayInMilisecond: 750,
-                    offset: Offset(0, 10),
-                    child: Container(
+              FadeInOffset(
+                delayInMilisecond: 500,
+                offset: Offset(0, 10),
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => Divider(thickness: 1, height: 1, color: Color(0xffcccccc),),
+                  itemBuilder: (context, index) {
+                    return Container(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.125,
                       child: Column(
@@ -122,12 +125,12 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                           LottoPickWidget(_luckyNums.length > 0 ? _luckyNums[index + 1] : [], onlyPicks: true, color: Colors.transparent,),
                         ],
                       ),
-                    ),
-                  );
-                },
-                itemCount: _luckyNums.length - 1,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                    );
+                  },
+                  itemCount: _luckyNums.length - 1,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                ),
               ),
             ],
             Space(50),
@@ -138,14 +141,24 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
   }
 
   Future<void> generateLuckyNumbers() async {
-    interstitialAdCallbacks = (event) {
-      if(event == MobileAdEvent.opened) {
-        generateNumbers();
-        interstitialAdCallbacks = null;
-      }
-    };
-    await getInterstitialAd().load();
-    await getInterstitialAd().show();
+    var prefs = await SharedPreferences.getInstance();
+    var count = prefs.getInt(generatedLuckyNumCountKey) ?? 0;
+    if(count % 3 == 0) {
+      interstitialAdCallbacks = (event) {
+        if(event == MobileAdEvent.opened) {
+          generateNumbers();
+          interstitialAdCallbacks = null;
+        }
+        if(event == MobileAdEvent.failedToLoad) {
+          Fluttertoast.showToast(msg: '번호 생성 중 오류가 발생했습니다.\n다음에 다시 시도해주세요.');
+        }
+      };
+      await getInterstitialAd().load();
+      await getInterstitialAd().show();   
+    } else {
+      generateNumbers();
+    }
+    prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
   }
 
   void generateNumbers() {
