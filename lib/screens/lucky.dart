@@ -147,6 +147,7 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
       interstitialAdCallbacks = (event) {
         if(event == MobileAdEvent.opened) {
           generateNumbers();
+          prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
           interstitialAdCallbacks = null;
         }
         if(event == MobileAdEvent.failedToLoad) {
@@ -157,8 +158,8 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
       await getInterstitialAd().show();   
     } else {
       generateNumbers();
+      prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
     }
-    prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
   }
 
   void generateNumbers() {
