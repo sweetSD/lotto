@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,14 +22,12 @@ class LuckyBallPage extends StatefulWidget {
 }
 
 class _LuckyBallPageState extends State<LuckyBallPage> {
-
   List<List<int>> _luckyNums = [];
   final String generatedLuckyNumCountKey = 'generatedLuckyNumbers';
 
   @override
   void initState() {
-    if(NetworkUtil().preference.containsKey('lucky')) {
-      
+    if (NetworkUtil().preference.containsKey('lucky')) {
       NetworkUtil().preference.getStringList('lucky').forEach((element) {
         _luckyNums.add(element.split(',').map((e) => int.parse(e)).toList());
       });
@@ -40,7 +37,6 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
 
   @override
   void dispose() {
-    interstitialAdCallbacks = null;
     super.dispose();
   }
 
@@ -50,9 +46,16 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
       title: '행운 번호 추첨',
       actions: <Widget>[
         IconButton(
-          icon: Icon(FontAwesomeIcons.chartBar, color: Colors.black,),
+          icon: Icon(
+            FontAwesomeIcons.chartBar,
+            color: Colors.black,
+          ),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AnalyzePage(luckyBalls: _luckyNums),));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AnalyzePage(luckyBalls: _luckyNums),
+                ));
           },
         )
       ],
@@ -76,7 +79,10 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                     children: <Widget>[
                       TextBinggrae('당신만을 위한 행운의 추첨 번호를 준비하였습니다.'),
                       Space(50),
-                      TextBinggrae('행운 번호 받기', color: Colors.blue,),
+                      TextBinggrae(
+                        '행운 번호 받기',
+                        color: Colors.blue,
+                      ),
                     ],
                   ),
                 ),
@@ -94,16 +100,28 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       TextBinggrae('행운 번호가 생성되었습니다.'),
-                      LottoPickWidget(_luckyNums.length > 0 ? _luckyNums[0] : [], onlyPicks: true, color: Colors.white,),
-                      TextBinggrae('행운 번호 다시 받기', color: Colors.blue,),
+                      LottoPickWidget(
+                        _luckyNums.length > 0 ? _luckyNums[0] : [],
+                        onlyPicks: true,
+                        color: Colors.white,
+                      ),
+                      TextBinggrae(
+                        '행운 번호 다시 받기',
+                        color: Colors.blue,
+                      ),
                     ],
                   ),
                 ),
               ),
-              crossFadeState: _luckyNums.length == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+              crossFadeState: _luckyNums.length == 0
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
             ),
-            if(_luckyNums.length > 1) ... [
-              Divider(height: 30, thickness: 1,),
+            if (_luckyNums.length > 1) ...[
+              Divider(
+                height: 30,
+                thickness: 1,
+              ),
               FadeInOffset(
                 delayInMilisecond: 250,
                 offset: Offset(0, 10),
@@ -114,7 +132,11 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                 delayInMilisecond: 500,
                 offset: Offset(0, 10),
                 child: ListView.separated(
-                  separatorBuilder: (context, index) => Divider(thickness: 1, height: 1, color: Color(0xffcccccc),),
+                  separatorBuilder: (context, index) => Divider(
+                    thickness: 1,
+                    height: 1,
+                    color: Color(0xffcccccc),
+                  ),
                   itemBuilder: (context, index) {
                     return Container(
                       width: MediaQuery.of(context).size.width,
@@ -122,7 +144,11 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          LottoPickWidget(_luckyNums.length > 0 ? _luckyNums[index + 1] : [], onlyPicks: true, color: Colors.transparent,),
+                          LottoPickWidget(
+                            _luckyNums.length > 0 ? _luckyNums[index + 1] : [],
+                            onlyPicks: true,
+                            color: Colors.transparent,
+                          ),
                         ],
                       ),
                     );
@@ -141,33 +167,15 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
   }
 
   Future<void> generateLuckyNumbers() async {
-    var prefs = await SharedPreferences.getInstance();
-    var count = prefs.getInt(generatedLuckyNumCountKey) ?? 0;
-    if(count % 3 == 0) {
-      interstitialAdCallbacks = (event) {
-        if(event == MobileAdEvent.opened) {
-          generateNumbers();
-          prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
-          interstitialAdCallbacks = null;
-        }
-        if(event == MobileAdEvent.failedToLoad) {
-          Fluttertoast.showToast(msg: '번호 생성 중 오류가 발생했습니다.\n다음에 다시 시도해주세요.');
-        }
-      };
-      await getInterstitialAd().load();
-      await getInterstitialAd().show();   
-    } else {
-      generateNumbers();
-      prefs.setInt(generatedLuckyNumCountKey, count + 1 % 3);
-    }
+    generateNumbers();
   }
 
   void generateNumbers() {
     Random random = Random();
     _luckyNums.insert(0, []);
-    while(_luckyNums[0].length < 6) {
+    while (_luckyNums[0].length < 6) {
       var randNum = random.nextInt(45) + 1;
-      if(_luckyNums[0].contains(randNum)) continue;
+      if (_luckyNums[0].contains(randNum)) continue;
       _luckyNums[0].add(randNum);
     }
     setState(() {

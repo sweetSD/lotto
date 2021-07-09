@@ -77,7 +77,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.google.firebase:firebase-core:17.0.0"
     implementation 'com.google.firebase:firebase-analytics'
-    implementation "com.google.firebase:firebase-ads:18.0.0"
     compile 'com.android.support:multidex:1.0.0'
 }
 

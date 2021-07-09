@@ -1,5 +1,5 @@
 name: lotto
-description: A new Flutter project.
+description: K-로또 프로젝트.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+3
+version: 1.0.0+4
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -42,7 +42,6 @@ dependencies:
   progress_dialog: ^1.2.4
   firebase_core: ^0.5.3
   firebase_database: ^4.1.0
-  firebase_admob: ^0.10.3
   device_info: ^0.4.2+8
   google_maps_flutter: ^1.0.6
   flutter_google_places: ^0.2.6
