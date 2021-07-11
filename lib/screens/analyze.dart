@@ -23,7 +23,6 @@ class Pair<K, V> {
 }
 
 class AnalyzePage extends StatefulWidget {
-
   final List<DateTime> drawDates;
   final List<List<int>> luckyBalls;
 
@@ -34,8 +33,8 @@ class AnalyzePage extends StatefulWidget {
 }
 
 class _AnalyzePageState extends State<AnalyzePage> {
-
-  AsyncMemoizer<List<Pair<int, int>>> _asyncMemoizer = AsyncMemoizer<List<Pair<int, int>>>();
+  AsyncMemoizer<List<Pair<int, int>>> _asyncMemoizer =
+      AsyncMemoizer<List<Pair<int, int>>>();
   List<Pair<int, int>> _lottoBallStats = List<Pair<int, int>>();
   int _maxCount = 0;
   bool _isSortByNumber = true;
@@ -47,7 +46,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
   @override
   void initState() {
     super.initState();
-    if(widget.luckyBalls == null) {
+    if (widget.luckyBalls == null) {
       _selectedStartDate = widget.drawDates.last;
       _selectedEndDate = widget.drawDates.first;
     }
@@ -56,19 +55,24 @@ class _AnalyzePageState extends State<AnalyzePage> {
   Future<List<Pair<int, int>>> getLottoStat() async {
     return _asyncMemoizer.runOnce(() async {
       _lottoBallStats.clear();
-      for(int i = 0; i < 45; i++) _lottoBallStats.add(Pair<int, int>(i + 1, 0));
+      for (int i = 0; i < 45; i++)
+        _lottoBallStats.add(Pair<int, int>(i + 1, 0));
 
-      if(widget.luckyBalls == null) {
-          var result = await NetworkUtil().getLottoBallStat(sttDrwNo: calculateDrawNum(_selectedStartDate), edDrwNo: calculateDrawNum(_selectedEndDate), srchType: _inclusiveBonus ? 1 : 0);
-          for(int i = 0; i < result.length; i++) {
-            if(_maxCount < result[i]) _maxCount = result[i];
-            _lottoBallStats[i].value = result[i];
-          }
+      if (widget.luckyBalls == null) {
+        var result = await NetworkUtil().getLottoBallStat(
+            sttDrwNo: calculateDrawNum(_selectedStartDate),
+            edDrwNo: calculateDrawNum(_selectedEndDate),
+            srchType: _inclusiveBonus ? 1 : 0);
+        for (int i = 0; i < result.length; i++) {
+          if (_maxCount < result[i]) _maxCount = result[i];
+          _lottoBallStats[i].value = result[i];
+        }
       } else {
-        for(int i = 0; i < widget.luckyBalls.length; i++) {
-          for(int j = 0; j < widget.luckyBalls[i].length; j++) {
+        for (int i = 0; i < widget.luckyBalls.length; i++) {
+          for (int j = 0; j < widget.luckyBalls[i].length; j++) {
             _lottoBallStats[widget.luckyBalls[i][j] - 1].value++;
-            if(_maxCount < _lottoBallStats[widget.luckyBalls[i][j] - 1].value) _maxCount = _lottoBallStats[widget.luckyBalls[i][j] - 1].value;
+            if (_maxCount < _lottoBallStats[widget.luckyBalls[i][j] - 1].value)
+              _maxCount = _lottoBallStats[widget.luckyBalls[i][j] - 1].value;
           }
         }
       }
@@ -82,60 +86,63 @@ class _AnalyzePageState extends State<AnalyzePage> {
       title: '당첨 번호 분석',
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.sort, color: Colors.black,),
+          icon: Icon(
+            Icons.sort,
+            color: Colors.black,
+          ),
           onPressed: () {
-            buildDialog(context, 
-              ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  color: Colors.transparent,
-                  child: Column(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSortByNumber = true;
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          color: Colors.white, 
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center, 
-                            children: <Widget>[
-                              if(_isSortByNumber) Icon(Icons.arrow_right),
-                              TextBinggrae('번호순 정렬')
-                            ],
+            buildDialog(
+                context,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    color: Colors.transparent,
+                    child: Column(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isSortByNumber = true;
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            color: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (_isSortByNumber) Icon(Icons.arrow_right),
+                                TextBinggrae('번호순 정렬')
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSortByNumber = false;
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          color: Colors.white, 
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              if(!_isSortByNumber) Icon(Icons.arrow_right),
-                              TextBinggrae('당첨순 정렬')
-                            ],
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isSortByNumber = false;
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            color: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (!_isSortByNumber) Icon(Icons.arrow_right),
+                                TextBinggrae('당첨순 정렬')
+                              ],
+                            ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              )
-            )
-            ..show();
+                ))
+              ..show();
           },
         ),
       ],
@@ -143,14 +150,15 @@ class _AnalyzePageState extends State<AnalyzePage> {
         future: getLottoStat(),
         builder: (context, snapshot) {
           return Padding(
-            padding: EdgeInsets.only(bottom: 50),
+            padding: EdgeInsets.zero,
             child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  if(widget.luckyBalls == null) ... [
+                  if (widget.luckyBalls == null) ...[
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       child: Row(
                         children: [
                           Expanded(
@@ -159,8 +167,14 @@ class _AnalyzePageState extends State<AnalyzePage> {
                               onTap: () {
                                 showSelectDrawPopup((dateTime) {
                                   setState(() {
-                                    if (validateDateTime(dateTime, _selectedEndDate)) { _selectedStartDate = dateTime; _asyncMemoizer = AsyncMemoizer<List<Pair<int, int>>>(); }
-                                    else Fluttertoast.showToast(msg: '시작 회차는 끝 회차보다 낮아야합니다.');
+                                    if (validateDateTime(
+                                        dateTime, _selectedEndDate)) {
+                                      _selectedStartDate = dateTime;
+                                      _asyncMemoizer =
+                                          AsyncMemoizer<List<Pair<int, int>>>();
+                                    } else
+                                      Fluttertoast.showToast(
+                                          msg: '시작 회차는 끝 회차보다 낮아야합니다.');
                                     Navigator.pop(context);
                                   });
                                 }, reversed: true);
@@ -170,7 +184,8 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 alignment: Alignment.center,
                                 decoration: roundBoxDecoration(),
-                                child: TextBinggrae('${calculateDrawNum(_selectedStartDate)}회 ~'),
+                                child: TextBinggrae(
+                                    '${calculateDrawNum(_selectedStartDate)}회 ~'),
                               ),
                             ),
                           ),
@@ -180,8 +195,14 @@ class _AnalyzePageState extends State<AnalyzePage> {
                               onTap: () {
                                 showSelectDrawPopup((dateTime) {
                                   setState(() {
-                                    if (validateDateTime(_selectedStartDate, dateTime)) { _selectedEndDate = dateTime; _asyncMemoizer = AsyncMemoizer<List<Pair<int, int>>>(); }
-                                    else Fluttertoast.showToast(msg: '시작 회차는 끝 회차보다 낮아야합니다.');
+                                    if (validateDateTime(
+                                        _selectedStartDate, dateTime)) {
+                                      _selectedEndDate = dateTime;
+                                      _asyncMemoizer =
+                                          AsyncMemoizer<List<Pair<int, int>>>();
+                                    } else
+                                      Fluttertoast.showToast(
+                                          msg: '시작 회차는 끝 회차보다 낮아야합니다.');
                                     Navigator.pop(context);
                                   });
                                 });
@@ -191,7 +212,8 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 alignment: Alignment.center,
                                 decoration: roundBoxDecoration(),
-                                child: TextBinggrae('~ ${calculateDrawNum(_selectedEndDate)}회'),
+                                child: TextBinggrae(
+                                    '~ ${calculateDrawNum(_selectedEndDate)}회'),
                               ),
                             ),
                           ),
@@ -201,7 +223,8 @@ class _AnalyzePageState extends State<AnalyzePage> {
                               onTap: () {
                                 setState(() {
                                   _inclusiveBonus = !_inclusiveBonus;
-                                  _asyncMemoizer = AsyncMemoizer<List<Pair<int, int>>>();
+                                  _asyncMemoizer =
+                                      AsyncMemoizer<List<Pair<int, int>>>();
                                 });
                               },
                               child: Container(
@@ -209,7 +232,8 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 decoration: roundBoxDecoration(),
                                 alignment: Alignment.center,
-                                child: TextBinggrae(_inclusiveBonus ? '보너스 포함' : '보너스 미포함'),
+                                child: TextBinggrae(
+                                    _inclusiveBonus ? '보너스 포함' : '보너스 미포함'),
                               ),
                             ),
                           ),
@@ -222,14 +246,13 @@ class _AnalyzePageState extends State<AnalyzePage> {
               ),
             ),
           );
-          
         },
       ),
     );
   }
 
   Widget getAnalyzedData(AsyncSnapshot<List<Pair<int, int>>> snapshot) {
-    if(snapshot.hasData) {
+    if (snapshot.hasData) {
       var data = snapshot.data;
       if (_isSortByNumber) {
         data.sort((a, b) => a.key.compareTo(b.key));
@@ -272,8 +295,14 @@ class _AnalyzePageState extends State<AnalyzePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            TextBinggrae('${(data[index]?.value ?? 0)}', size: 9,),
-                            TextBinggrae('$_maxCount', size: 9,),
+                            TextBinggrae(
+                              '${(data[index]?.value ?? 0)}',
+                              size: 9,
+                            ),
+                            TextBinggrae(
+                              '$_maxCount',
+                              size: 9,
+                            ),
                           ],
                         ),
                       ),
@@ -298,47 +327,50 @@ class _AnalyzePageState extends State<AnalyzePage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height - 200,
         alignment: Alignment.center,
-        child: TextBinggrae('데이터를 불러오고 있습니다. :)\n\n추첨 직후에는 로딩이 느릴 수 있습니다.\n\n- 잠시만 기다려주세요.. -'),
+        child: TextBinggrae(
+            '데이터를 불러오고 있습니다. :)\n\n추첨 직후에는 로딩이 느릴 수 있습니다.\n\n- 잠시만 기다려주세요.. -'),
       );
     }
   }
 
   bool validateDateTime(DateTime start, DateTime end) => start.isBefore(end);
 
-  void showSelectDrawPopup(Function(DateTime) callback, {bool reversed = false}) {
-    buildDialog(context, 
-      ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.8,
-          color: Colors.transparent,
-          child: ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              if(reversed) index = (widget.drawDates.length - 1) - index;
-              return GestureDetector(
-                onTap: () {
-                  callback(widget.drawDates[index]);
-                },
-                child: Container(
-                  color: index % 2 == 0 ? Colors.white : Colors.grey[200], 
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TextBinggrae('${calculateDrawNum(widget.drawDates[index])}회')
-                    ],
+  void showSelectDrawPopup(Function(DateTime) callback,
+      {bool reversed = false}) {
+    buildDialog(
+        context,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.8,
+            color: Colors.transparent,
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                if (reversed) index = (widget.drawDates.length - 1) - index;
+                return GestureDetector(
+                  onTap: () {
+                    callback(widget.drawDates[index]);
+                  },
+                  child: Container(
+                    color: index % 2 == 0 ? Colors.white : Colors.grey[200],
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TextBinggrae(
+                            '${calculateDrawNum(widget.drawDates[index])}회')
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-            itemCount: widget.drawDates.length,
+                );
+              },
+              itemCount: widget.drawDates.length,
+            ),
           ),
-        ),
-      )
-    )
-    ..show();
+        ))
+      ..show();
   }
 }

@@ -129,7 +129,8 @@ class _MainPageState extends State<MainPage> {
                               Timer.periodic(Duration(seconds: 1), (timer) {
                             timer.cancel();
                             Fluttertoast.showToast(
-                                msg: '해당 이미지에서 QR 코드를 인식할 수 없습니다.');
+                                msg:
+                                    '해당 이미지에서 QR 코드를 인식할 수 없습니다. (인식률이 낮을 수 있습니다.)');
                           });
                           var scanResult =
                               await scanner.scanPath(pickedFile.path);

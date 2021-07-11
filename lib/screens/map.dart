@@ -46,7 +46,8 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
       var controller = await _controller.future;
       //position = Position(latitude: _kGooglePlex.target.latitude, longitude: _kGooglePlex.target.longitude);
       //controller.moveCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
-      controller.moveCamera(CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
+      controller.moveCamera(CameraUpdate.newLatLng(
+          LatLng(position.latitude, position.longitude)));
       await updateMarker(position);
     });
   }
@@ -56,7 +57,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
     return new BaseScreen(
       title: '주변 로또 판매점 검색',
       body: Padding(
-        padding: EdgeInsets.only(bottom: 50),
+        padding: EdgeInsets.zero,
         child: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: _kGooglePlex,
@@ -67,9 +68,11 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
             _cameraPosition = position;
           },
           onCameraIdle: () async {
-            if(_cameraPosition == null) return;
+            if (_cameraPosition == null) return;
             var controller = await _controller.future;
-            await updateMarker(Position(latitude: _cameraPosition.target.latitude, longitude: _cameraPosition.target.longitude));
+            await updateMarker(Position(
+                latitude: _cameraPosition.target.latitude,
+                longitude: _cameraPosition.target.longitude));
             _cameraPosition = null;
           },
           markers: _markers.values.toSet(),
@@ -79,8 +82,9 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
   }
 
   Future<void> updateMarker(Position positon) async {
-    for(int i = 1; i <= 45; i++) {
-      var placeResponse = await NetworkUtil().getPlaceFromKakaoAPI('로또판매점', positon, 1000, page: i);
+    for (int i = 1; i <= 45; i++) {
+      var placeResponse = await NetworkUtil()
+          .getPlaceFromKakaoAPI('로또판매점', positon, 1000, page: i);
       print(placeResponse.places.length);
       setState(() {
         placeResponse.places.forEach((element) {
@@ -92,7 +96,8 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
               element.y,
               element.x,
             ),
-            infoWindow: InfoWindow(title: element.placeName, snippet: element.addressName),
+            infoWindow: InfoWindow(
+                title: element.placeName, snippet: element.addressName),
             onTap: () {
               _onMarkerTapped(markerId);
             },
@@ -100,13 +105,11 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
           _markers[markerId] = marker;
         });
       });
-      if(placeResponse.isEnd) break;
+      if (placeResponse.isEnd) break;
     }
   }
 
-  void _onMarkerTapped(MarkerId markerId) {
-
-  }
+  void _onMarkerTapped(MarkerId markerId) {}
 }
 
 List<String> nationSido = [
@@ -137,7 +140,6 @@ class NationWideStorePage extends StatefulWidget {
 }
 
 class _NationWideStorePageState extends State<NationWideStorePage> {
-
   String _sido = '서울';
   String _gugun = '강남구';
 
@@ -203,86 +205,85 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
   }
 
   void showSidoSelectPopup() {
-    buildDialog(context, 
-      ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.8,
-          color: Colors.transparent,
-          child: ListView.builder(
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () async {
-                  var list = await NetworkUtil().getGugun(nationSido[index]);
-                  print(list);
-                  setState(() {
-                    _guguns = list;
-                    if(_guguns.length > 0) _gugun = _guguns[0]; else _gugun = '';
-                    _sido = nationSido[index];
-                    Navigator.pop(context);
-                  });
-                },
-                child: Container(
-                  color: index % 2 == 0 ? Colors.white : Colors.grey[200], 
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TextBinggrae(nationSido[index])
-                    ],
+    buildDialog(
+        context,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.8,
+            color: Colors.transparent,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () async {
+                    var list = await NetworkUtil().getGugun(nationSido[index]);
+                    print(list);
+                    setState(() {
+                      _guguns = list;
+                      if (_guguns.length > 0)
+                        _gugun = _guguns[0];
+                      else
+                        _gugun = '';
+                      _sido = nationSido[index];
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Container(
+                    color: index % 2 == 0 ? Colors.white : Colors.grey[200],
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[TextBinggrae(nationSido[index])],
+                    ),
                   ),
-                ),
-              );
-            },
-            itemCount: nationSido.length,
+                );
+              },
+              itemCount: nationSido.length,
+            ),
           ),
-        ),
-      )
-    )
-    ..show();
+        ))
+      ..show();
   }
 
   void showGugunSelectPopup() {
-    buildDialog(context, 
-      ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.8,
-          color: Colors.transparent,
-          child: ListView.builder(
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _gugun = _guguns[index];
-                    Navigator.pop(context);
-                  });
-                },
-                child: Container(
-                  color: index % 2 == 0 ? Colors.white : Colors.grey[200], 
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      TextBinggrae(_guguns[index])
-                    ],
+    buildDialog(
+        context,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.8,
+            color: Colors.transparent,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _gugun = _guguns[index];
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Container(
+                    color: index % 2 == 0 ? Colors.white : Colors.grey[200],
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[TextBinggrae(_guguns[index])],
+                    ),
                   ),
-                ),
-              );
-            },
-            itemCount: _guguns.length,
+                );
+              },
+              itemCount: _guguns.length,
+            ),
           ),
-        ),
-      )
-    )
-    ..show();
+        ))
+      ..show();
   }
 }

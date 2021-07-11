@@ -159,7 +159,6 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                 ),
               ),
             ],
-            Space(50),
           ],
         ),
       ),
