@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
@@ -48,6 +50,17 @@ class _MainPageState extends State<MainPage> {
 
   AsyncMemoizer<Lotto> _asyncMemoizer = AsyncMemoizer<Lotto>();
 
+  InterstitialAd _interstitialAd = InterstitialAd(
+    adUnitId: admobAppStartID,
+    listener: (MobileAdEvent event) {
+      if (event == MobileAdEvent.failedToLoad) {
+      } else if (event == MobileAdEvent.closed) {}
+      print("InterstitialAd event is $event");
+    },
+  );
+
+  bool _adWatched = false;
+
   @override
   void initState() {
     _curDrawNum = calculateLatestDrawNum();
@@ -55,6 +68,19 @@ class _MainPageState extends State<MainPage> {
     for (int i = 0; i < _curDrawNum; i++) {
       _drawDates.add(beginDateTime.add(Duration(days: i * 7)));
     }
+
+    print(_curDrawNum);
+
+    Future.delayed(Duration.zero, () async {
+      Lotto lotto = null;
+      int tempDrawNum = _curDrawNum;
+
+      while (lotto == null || lotto.result == "fail") {
+        lotto = await NetworkUtil().getLottoNumber(tempDrawNum--);
+      }
+
+      _curDrawNum = lotto.drawNumber;
+    });
 
     _drawDates = _drawDates.reversed.toList();
 
@@ -67,6 +93,7 @@ class _MainPageState extends State<MainPage> {
       icon: Icon(FontAwesomeIcons.qrcode),
       color: Colors.black,
       onPressed: () async {
+        if (watchAd() == false) return;
         buildDialog(
             context,
             Container(
@@ -176,18 +203,11 @@ class _MainPageState extends State<MainPage> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextBinggrae(
-            'K - ',
-            size: 25,
-            color: Color(0xffffA401),
-            height: 1.1,
-          ),
-          TextBinggrae(
-            '로또',
-            size: 25,
-            color: Color(0xff00B0F0),
-            height: 1.1,
-          ),
+          Container(
+            width: 100,
+            height: 65,
+            child: Image.asset("assets/images/new_icon_512x512_clear.png"),
+          )
         ],
       ),
       backgroundColor: Colors.white,
@@ -198,6 +218,7 @@ class _MainPageState extends State<MainPage> {
           color: Colors.black,
         ),
         onPressed: () async {
+          if (watchAd() == false) return;
           buildDialog(
               context,
               Container(
@@ -245,6 +266,32 @@ class _MainPageState extends State<MainPage> {
       future: getLotto(_curDrawNum),
       builder: (context, snapshot) {
         var data = snapshot.data;
+        if (snapshot.hasError) {
+          return BaseScreen(
+            appBar: AppBar(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 65,
+                    child:
+                        Image.asset("assets/images/new_icon_512x512_clear.png"),
+                  )
+                ],
+              ),
+              backgroundColor: Colors.white,
+              centerTitle: true,
+            ),
+            body: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              alignment: Alignment.center,
+              child: TextBinggrae("오류가 발생하였습니다.\n잠시후 다시 시도해주세요."),
+            ),
+          );
+        }
+
         return BaseScreen(
           appBar: appbar,
           body: SingleChildScrollView(
@@ -366,7 +413,8 @@ class _MainPageState extends State<MainPage> {
                     delayInMilisecond: 0,
                     offset: Offset(0, 50),
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        if (watchAd() == false) return;
                         _dateScrollController = ScrollController(
                             initialScrollOffset: _dateScrollPosition);
                         _dateScrollController.addListener(() {
@@ -389,6 +437,7 @@ class _MainPageState extends State<MainPage> {
                     offset: Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
+                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -419,7 +468,8 @@ class _MainPageState extends State<MainPage> {
                     delayInMilisecond: 450,
                     offset: Offset(0, 50),
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -440,7 +490,8 @@ class _MainPageState extends State<MainPage> {
                     delayInMilisecond: 600,
                     offset: Offset(0, 50),
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -485,8 +536,87 @@ class _MainPageState extends State<MainPage> {
           await prefs.setBool('firstSync', true);
         }
       });
-      return await NetworkUtil().getLottoNumber(drawNum);
+
+      Lotto lotto = null;
+
+      while (lotto == null || lotto.result == "fail") {
+        lotto = await NetworkUtil().getLottoNumber(drawNum--);
+      }
+      return lotto;
     });
+  }
+
+  bool watchAd() {
+    if (_adWatched) return true;
+
+    buildDialog(
+        context,
+        ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.3,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: TextBinggrae(
+                          "모든 기능을 이용하시려면\n앱 실행 후 광고를 1회\n시청하여야 합니다.\n\n(광고 시청은 개발자에게 큰 도움이 됩니다.)"),
+                    ),
+                    Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                _adWatched = false;
+                                setState(() {
+                                  Navigator.pop(context);
+                                });
+                              },
+                              child: Container(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.4 - 1,
+                                alignment: Alignment.center,
+                                color: Colors.white,
+                                child: TextBinggrae("취소"),
+                              ),
+                            ),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.05,
+                              child: VerticalDivider(
+                                width: 2,
+                                thickness: 2,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                _adWatched = true;
+                                _interstitialAd
+                                  ..load()
+                                  ..show();
+                                setState(() {
+                                  Navigator.pop(context);
+                                });
+                              },
+                              child: Container(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.4 - 1,
+                                alignment: Alignment.center,
+                                color: Colors.white,
+                                child: TextBinggrae("확인"),
+                              ),
+                            ),
+                          ],
+                        ))
+                  ],
+                ))))
+      ..show();
+    return false;
   }
 
   void showSelectDrawPopup() {
@@ -504,10 +634,18 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _curDrawNum = _drawDates.length - index;
+                  onTap: () async {
+                    var lotto = await NetworkUtil()
+                        .getLottoNumber(_drawDates.length - index);
+                    if (lotto.result == "fail") {
+                      Fluttertoast.showToast(
+                          msg:
+                              "${_drawDates.length - index} 해당 회차의 추첨이 진행되지 않았습니다. 잠시후 다시 시도해주세요.");
+                    } else {
                       _asyncMemoizer = AsyncMemoizer<Lotto>();
+                      _curDrawNum = _drawDates.length - index;
+                    }
+                    setState(() {
                       Navigator.pop(context);
                     });
                   },

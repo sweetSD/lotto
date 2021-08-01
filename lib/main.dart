@@ -3,19 +3,33 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_admob_app_open/ad_request_app_open.dart';
+import 'package:flutter_admob_app_open/flutter_admob_app_open.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lotto/Screens/main.dart';
 import 'package:lotto/utility/notification.dart';
 import 'package:timezone/timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:lotto/const.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
 FirebaseApp firebaseApp;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FirebaseAdMob.instance
+      .initialize(appId: Platform.isIOS ? FirebaseAdMob.testAppId : admobAppID)
+      .then((value) {
+    if (value)
+      print('firebase admob initialize success.');
+    else
+      print('firebase admob initialize failed.');
+  });
 
-  if(Platform.isAndroid) {
+  await FlutterAdmobAppOpen.instance
+      .initialize(appId: admobAppID, appAppOpenAdUnitId: admobAppStartID);
+
+  if (Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
     var build = await deviceInfoPlugin.androidInfo;
     firebaseApp = await Firebase.initializeApp(
@@ -32,20 +46,19 @@ Future<void> main() async {
     final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
     var build = await deviceInfoPlugin.iosInfo;
     firebaseApp = await Firebase.initializeApp(
-      name: 'life-lotto-db',
-      options: FirebaseOptions(
-        appId: '1:297855924061:ios:c6de2b69b03a5be8',
-        apiKey: firebaseApiKey,
-        projectId: firebaseProjectID,
-        messagingSenderId: build.identifierForVendor,
-        databaseURL: firebaseDatabaseURL,
-      )
-    );
+        name: 'life-lotto-db',
+        options: FirebaseOptions(
+          appId: '1:297855924061:ios:c6de2b69b03a5be8',
+          apiKey: firebaseApiKey,
+          projectId: firebaseProjectID,
+          messagingSenderId: build.identifierForVendor,
+          databaseURL: firebaseDatabaseURL,
+        ));
   }
 
   tz.initializeTimeZones();
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin.initialize(initializeSettings); 
+  await flutterLocalNotificationsPlugin.initialize(initializeSettings);
   scheduleWeeklyNotification();
 
   runApp(MyApp());
@@ -66,7 +79,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
-      themeMode: ThemeMode.light, 
+      themeMode: ThemeMode.light,
       home: MainPage(),
     );
   }

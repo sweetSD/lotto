@@ -166,7 +166,21 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
   }
 
   Future<void> generateLuckyNumbers() async {
-    generateNumbers();
+    String key = 'daily_lucky';
+    var prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(key)) {
+      var lastDate = DateTime.fromMillisecondsSinceEpoch(prefs.getInt(key));
+      if (lastDate.day != DateTime.now().day &&
+          !DateTime.now().difference(lastDate).isNegative) {
+        generateNumbers();
+        prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
+      } else {
+        Fluttertoast.showToast(msg: "행운 번호는 하루 한 번 이용할 수 있습니다.");
+      }
+    } else {
+      prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
+      generateNumbers();
+    }
   }
 
   void generateNumbers() {

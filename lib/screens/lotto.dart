@@ -291,7 +291,7 @@ class _QRResultPageeState extends State<QRResultPage> {
                                   if (data[index].lotto != null) ...[
                                     data[index].prize > 0
                                         ? TextBinggrae(
-                                            '${data[index].prize}원 당첨되셨습니다.')
+                                            '${NumberFormat('###,###,###,###').format(data[index].prize)}원 당첨되셨습니다.')
                                         : TextBinggrae('아쉽지만, 낙첨되셨습니다.'),
                                     LottoWinResultWidget(data[index].lotto,
                                         useDecoration: false),
