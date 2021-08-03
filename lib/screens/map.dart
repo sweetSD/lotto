@@ -34,7 +34,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
 
   Map<MarkerId, Marker> _markers = {};
 
-  CameraPosition _cameraPosition;
+  CameraPosition? _cameraPosition;
 
   int _loadMarkerCount = 0;
 
@@ -42,7 +42,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      var position = await getCurrentPosition();
+      var position = await Geolocator.getCurrentPosition();
       var controller = await _controller.future;
       //position = Position(latitude: _kGooglePlex.target.latitude, longitude: _kGooglePlex.target.longitude);
       //controller.moveCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
@@ -70,9 +70,10 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
           onCameraIdle: () async {
             if (_cameraPosition == null) return;
             var controller = await _controller.future;
-            await updateMarker(Position(
-                latitude: _cameraPosition.target.latitude,
-                longitude: _cameraPosition.target.longitude));
+            await updateMarker(Position.fromMap({
+              'latitude': _cameraPosition!.target.latitude,
+              'longitude': _cameraPosition!.target.longitude
+            }));
             _cameraPosition = null;
           },
           markers: _markers.values.toSet(),
@@ -88,13 +89,13 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
       print(placeResponse.places.length);
       setState(() {
         placeResponse.places.forEach((element) {
-          final MarkerId markerId = MarkerId(element.id);
+          final MarkerId markerId = MarkerId(element.id!);
 
           final Marker marker = Marker(
             markerId: markerId,
             position: LatLng(
-              element.y,
-              element.x,
+              element.y!,
+              element.x!,
             ),
             infoWindow: InfoWindow(
                 title: element.placeName, snippet: element.addressName),
@@ -105,7 +106,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
           _markers[markerId] = marker;
         });
       });
-      if (placeResponse.isEnd) break;
+      if (placeResponse.isEnd!) break;
     }
   }
 
@@ -133,7 +134,7 @@ List<String> nationSido = [
 ];
 
 class NationWideStorePage extends StatefulWidget {
-  NationWideStorePage({Key key}) : super(key: key);
+  NationWideStorePage({Key? key}) : super(key: key);
 
   @override
   _NationWideStorePageState createState() => _NationWideStorePageState();
@@ -245,8 +246,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
               itemCount: nationSido.length,
             ),
           ),
-        ))
-      ..show();
+        ));
   }
 
   void showGugunSelectPopup() {
@@ -283,7 +283,6 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
               itemCount: _guguns.length,
             ),
           ),
-        ))
-      ..show();
+        ));
   }
 }

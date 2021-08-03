@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
@@ -9,85 +8,129 @@ part 'lotto.g.dart';
 @JsonSerializable()
 class Lotto {
   @JsonKey(name: 'returnValue')
-  final String result;
+  final String? result;
 
   @JsonKey(name: 'drwNo')
-  final num drawNumber;
+  final num? drawNumber;
 
   @JsonKey(name: 'drwNoDate')
-  final DateTime drawAt;
+  final DateTime? drawAt;
 
   @JsonKey(name: 'totSellamnt')
-  final num totalSellAmount;
+  final num? totalSellAmount;
 
   @JsonKey(name: 'firstAccumamnt')
-  final num winnerTotalAmount;
+  final num? winnerTotalAmount;
 
   @JsonKey(name: 'firstWinamnt')
-  final num winnerAmount;
+  final num? winnerAmount;
 
   @JsonKey(name: 'firstPrzwnerCo')
-  final num winnerCount;
+  final num? winnerCount;
 
   @JsonKey(name: 'drwtNo1')
-  final num drawNo1;
+  final num? drawNo1;
 
   @JsonKey(name: 'drwtNo2')
-  final num drawNo2;
+  final num? drawNo2;
 
   @JsonKey(name: 'drwtNo3')
-  final num drawNo3;
+  final num? drawNo3;
 
   @JsonKey(name: 'drwtNo4')
-  final num drawNo4;
+  final num? drawNo4;
 
   @JsonKey(name: 'drwtNo5')
-  final num drawNo5;
+  final num? drawNo5;
 
   @JsonKey(name: 'drwtNo6')
-  final num drawNo6;
+  final num? drawNo6;
 
   @JsonKey(name: 'bnusNo')
-  final num drawBonus;
+  final num? drawBonus;
 
   @JsonKey(ignore: true)
-  num winnerAutoCount;
+  num? winnerAutoCount;
 
   @JsonKey(ignore: true)
-  num winnerManualCount;
+  num? winnerManualCount;
 
   @JsonKey(ignore: true)
-  num winnerSemiAutoCount;
+  num? winnerSemiAutoCount;
 
-  Lotto(this.result, this.drawNumber, this.drawAt, this.totalSellAmount, this.winnerTotalAmount, this.winnerAmount, this.winnerCount, this.drawNo1, this.drawNo2, this.drawNo3, this.drawNo4, this.drawNo5, this.drawNo6, this.drawBonus, [this.winnerAutoCount = 0, this.winnerManualCount = 0, this.winnerSemiAutoCount = 0]);
+  Lotto(
+      this.result,
+      this.drawNumber,
+      this.drawAt,
+      this.totalSellAmount,
+      this.winnerTotalAmount,
+      this.winnerAmount,
+      this.winnerCount,
+      this.drawNo1,
+      this.drawNo2,
+      this.drawNo3,
+      this.drawNo4,
+      this.drawNo5,
+      this.drawNo6,
+      this.drawBonus,
+      [this.winnerAutoCount = 0,
+      this.winnerManualCount = 0,
+      this.winnerSemiAutoCount = 0]);
 
-  List<int> get numbers => [drawNo1, drawNo2, drawNo3, drawNo4, drawNo5, drawNo6];
+  List<int?> get numbers => [
+        drawNo1 as int?,
+        drawNo2 as int?,
+        drawNo3 as int?,
+        drawNo4 as int?,
+        drawNo5 as int?,
+        drawNo6 as int
+      ];
 
-  List<int> get numbersWithBonus => [drawNo1, drawNo2, drawNo3, drawNo4, drawNo5, drawNo6, drawBonus];
-  
+  List<int?> get numbersWithBonus => [
+        drawNo1 as int?,
+        drawNo2 as int?,
+        drawNo3 as int?,
+        drawNo4 as int?,
+        drawNo5 as int?,
+        drawNo6 as int?,
+        drawBonus as int
+      ];
+
   factory Lotto.fromJson(Map<String, dynamic> json) => _$LottoFromJson(json);
 
   Map<String, dynamic> toJson() => _$LottoToJson(this);
 }
 
 class LottoPick {
-  final int result;
+  final int? result;
   final List<int> pickNumbers;
 
   const LottoPick(this.result, this.pickNumbers);
 
-  static fromJson(Map<String, dynamic> json) => LottoPick(json['result'] as int, List<int>.from(json['pickNumbers']));
-  toJson() => { 'result': result, 'pickNumbers': pickNumbers };
+  static fromJson(Map<String, dynamic> json) =>
+      LottoPick(json['result'] as int?, List<int>.from(json['pickNumbers']));
+  toJson() => {'result': result, 'pickNumbers': pickNumbers};
 }
 
 class LottoQRResult {
-  final Lotto lotto;
-  final int prize;
+  final Lotto? lotto;
+  final int? prize;
   final List<LottoPick> picks;
-  final String url;
+  final String? url;
 
   const LottoQRResult(this.lotto, this.prize, this.picks, this.url);
 
-  static fromJson(Map<String, dynamic> json) => LottoQRResult(Lotto.fromJson(json['lotto']), json['prize'], List.from(jsonDecode(json['picks'])).map<LottoPick>((e) => LottoPick.fromJson(e)).toList(), json['url']);
-  toJson() => { 'lotto': lotto.toJson(), 'prize': prize, 'picks': jsonEncode(picks), 'url': url };
+  static fromJson(Map<String, dynamic> json) => LottoQRResult(
+      Lotto.fromJson(json['lotto']),
+      json['prize'],
+      List.from(jsonDecode(json['picks']))
+          .map<LottoPick>((e) => LottoPick.fromJson(e))
+          .toList(),
+      json['url']);
+  toJson() => {
+        'lotto': lotto!.toJson(),
+        'prize': prize,
+        'picks': jsonEncode(picks),
+        'url': url
+      };
 }

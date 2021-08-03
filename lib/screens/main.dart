@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,14 +26,14 @@ import 'package:lotto/widgets/lotto.dart';
 import 'package:lotto/widgets/text.dart';
 import 'package:lotto/widgets/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // 로또가 처음으로 시작한 날짜.
 DateTime beginDateTime = DateTime(2002, 12, 7, 20, 55, 0);
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -42,7 +42,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final _imagePicker = ImagePicker();
 
-  int _curDrawNum = 1;
+  int? _curDrawNum = 1;
   List<DateTime> _drawDates = [];
 
   ScrollController _dateScrollController = ScrollController();
@@ -50,36 +50,25 @@ class _MainPageState extends State<MainPage> {
 
   AsyncMemoizer<Lotto> _asyncMemoizer = AsyncMemoizer<Lotto>();
 
-  InterstitialAd _interstitialAd = InterstitialAd(
-    adUnitId: admobAppStartID,
-    listener: (MobileAdEvent event) {
-      if (event == MobileAdEvent.failedToLoad) {
-      } else if (event == MobileAdEvent.closed) {}
-      print("InterstitialAd event is $event");
-    },
-  );
-
-  bool _adWatched = false;
-
   @override
   void initState() {
     _curDrawNum = calculateLatestDrawNum();
 
-    for (int i = 0; i < _curDrawNum; i++) {
+    for (int i = 0; i < _curDrawNum!; i++) {
       _drawDates.add(beginDateTime.add(Duration(days: i * 7)));
     }
 
     print(_curDrawNum);
 
     Future.delayed(Duration.zero, () async {
-      Lotto lotto = null;
-      int tempDrawNum = _curDrawNum;
+      Lotto? lotto = null;
+      int tempDrawNum = _curDrawNum!;
 
       while (lotto == null || lotto.result == "fail") {
         lotto = await NetworkUtil().getLottoNumber(tempDrawNum--);
       }
 
-      _curDrawNum = lotto.drawNumber;
+      _curDrawNum = lotto.drawNumber as int?;
     });
 
     _drawDates = _drawDates.reversed.toList();
@@ -93,7 +82,6 @@ class _MainPageState extends State<MainPage> {
       icon: Icon(FontAwesomeIcons.qrcode),
       color: Colors.black,
       onPressed: () async {
-        if (watchAd() == false) return;
         buildDialog(
             context,
             Container(
@@ -169,7 +157,7 @@ class _MainPageState extends State<MainPage> {
                                   builder: (context) =>
                                       LottoQRResultPage(scanResult)));
                         } catch (e) {
-                          print('!' + e);
+                          print('!' + e.toString());
                         }
                         //Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage('https://m.dhlottery.co.kr/qr.do?method=winQr&v=0813q112730313843q101824252728q011314242543q030619214044q1430353843440000001677')));
                       }
@@ -195,7 +183,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-            )).show();
+            ));
       },
     );
 
@@ -218,7 +206,6 @@ class _MainPageState extends State<MainPage> {
           color: Colors.black,
         ),
         onPressed: () async {
-          if (watchAd() == false) return;
           buildDialog(
               context,
               Container(
@@ -256,14 +243,14 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ],
                 ),
-              )).show();
+              ));
         },
       ),
       actions: <Widget>[qrButton],
     );
 
     return FutureBuilder<Lotto>(
-      future: getLotto(_curDrawNum),
+      future: getLotto(_curDrawNum!),
       builder: (context, snapshot) {
         var data = snapshot.data;
         if (snapshot.hasError) {
@@ -333,7 +320,7 @@ class _MainPageState extends State<MainPage> {
                                 Expanded(
                                   child: TextBinggrae(
                                     (snapshot.hasData &&
-                                            data.totalSellAmount > 0)
+                                            data!.totalSellAmount! > 0)
                                         ? currencyFormat
                                                 .format(data.totalSellAmount) +
                                             '원'
@@ -356,7 +343,7 @@ class _MainPageState extends State<MainPage> {
                                 Expanded(
                                   child: TextBinggrae(
                                     (snapshot.hasData &&
-                                            data.totalSellAmount > 0)
+                                            data!.totalSellAmount! > 0)
                                         ? currencyFormat
                                                 .format(data.winnerAmount) +
                                             '원'
@@ -379,7 +366,7 @@ class _MainPageState extends State<MainPage> {
                                 Expanded(
                                   child: TextBinggrae(
                                     (snapshot.hasData &&
-                                            data.totalSellAmount > 0)
+                                            data!.totalSellAmount! > 0)
                                         ? currencyFormat
                                                 .format(data.winnerCount) +
                                             '명'
@@ -414,7 +401,6 @@ class _MainPageState extends State<MainPage> {
                     offset: Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
-                        if (watchAd() == false) return;
                         _dateScrollController = ScrollController(
                             initialScrollOffset: _dateScrollPosition);
                         _dateScrollController.addListener(() {
@@ -437,7 +423,6 @@ class _MainPageState extends State<MainPage> {
                     offset: Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
-                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -469,7 +454,6 @@ class _MainPageState extends State<MainPage> {
                     offset: Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
-                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -491,7 +475,6 @@ class _MainPageState extends State<MainPage> {
                     offset: Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
-                        if (watchAd() == false) return;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -530,93 +513,20 @@ class _MainPageState extends State<MainPage> {
   Future<Lotto> getLotto(int drawNum) {
     return _asyncMemoizer.runOnce(() async {
       await Future.delayed(Duration.zero, () async {
-        var prefs = (await NetworkUtil().preferenceAsync);
+        var prefs = await NetworkUtil().preferenceAsync as SharedPreferences;
         if (!prefs.containsKey('firstSync')) {
           await NetworkUtil().syncLottoResultsFromFirebase();
           await prefs.setBool('firstSync', true);
         }
       });
 
-      Lotto lotto = null;
+      Lotto? lotto = null;
 
       while (lotto == null || lotto.result == "fail") {
         lotto = await NetworkUtil().getLottoNumber(drawNum--);
       }
       return lotto;
     });
-  }
-
-  bool watchAd() {
-    if (_adWatched) return true;
-
-    buildDialog(
-        context,
-        ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: MediaQuery.of(context).size.height * 0.3,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      child: TextBinggrae(
-                          "모든 기능을 이용하시려면\n앱 실행 후 광고를 1회\n시청하여야 합니다.\n\n(광고 시청은 개발자에게 큰 도움이 됩니다.)"),
-                    ),
-                    Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height * 0.1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _adWatched = false;
-                                setState(() {
-                                  Navigator.pop(context);
-                                });
-                              },
-                              child: Container(
-                                width:
-                                    MediaQuery.of(context).size.width * 0.4 - 1,
-                                alignment: Alignment.center,
-                                color: Colors.white,
-                                child: TextBinggrae("취소"),
-                              ),
-                            ),
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.05,
-                              child: VerticalDivider(
-                                width: 2,
-                                thickness: 2,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                _adWatched = true;
-                                _interstitialAd
-                                  ..load()
-                                  ..show();
-                                setState(() {
-                                  Navigator.pop(context);
-                                });
-                              },
-                              child: Container(
-                                width:
-                                    MediaQuery.of(context).size.width * 0.4 - 1,
-                                alignment: Alignment.center,
-                                color: Colors.white,
-                                child: TextBinggrae("확인"),
-                              ),
-                            ),
-                          ],
-                        ))
-                  ],
-                ))))
-      ..show();
-    return false;
   }
 
   void showSelectDrawPopup() {
@@ -667,8 +577,7 @@ class _MainPageState extends State<MainPage> {
               itemCount: _drawDates.length,
             ),
           ),
-        ))
-      ..show();
+        ));
   }
 }
 

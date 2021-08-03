@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lotto/animation/fade.dart';
+import 'package:lotto/const.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/screens/analyze.dart';
 import 'package:lotto/screens/main.dart';
@@ -15,7 +17,7 @@ import 'package:lotto/widgets/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LuckyBallPage extends StatefulWidget {
-  LuckyBallPage({Key key}) : super(key: key);
+  LuckyBallPage({Key? key}) : super(key: key);
 
   @override
   _LuckyBallPageState createState() => _LuckyBallPageState();
@@ -27,11 +29,12 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
 
   @override
   void initState() {
-    if (NetworkUtil().preference.containsKey('lucky')) {
-      NetworkUtil().preference.getStringList('lucky').forEach((element) {
+    if (NetworkUtil().preference!.containsKey('lucky')) {
+      NetworkUtil().preference!.getStringList('lucky')!.forEach((element) {
         _luckyNums.add(element.split(',').map((e) => int.parse(e)).toList());
       });
     }
+
     super.initState();
   }
 
@@ -165,21 +168,34 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
     );
   }
 
+  void tryInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: admobLuckyID,
+        request: AdRequest(),
+        adLoadCallback:
+            InterstitialAdLoadCallback(onAdLoaded: (InterstitialAd ad) {
+          ad.show();
+          generateNumbers();
+        }, onAdFailedToLoad: (LoadAdError error) {
+          Fluttertoast.showToast(msg: "오류가 발생하여 번호를 생성할 수 없습니다.");
+        }));
+  }
+
   Future<void> generateLuckyNumbers() async {
     String key = 'daily_lucky';
     var prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(key)) {
-      var lastDate = DateTime.fromMillisecondsSinceEpoch(prefs.getInt(key));
+      var lastDate = DateTime.fromMillisecondsSinceEpoch(prefs.getInt(key)!);
       if (lastDate.day != DateTime.now().day &&
           !DateTime.now().difference(lastDate).isNegative) {
-        generateNumbers();
+        tryInterstitialAd();
         prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
       } else {
         Fluttertoast.showToast(msg: "행운 번호는 하루 한 번 이용할 수 있습니다.");
       }
     } else {
       prefs.setInt(key, DateTime.now().millisecondsSinceEpoch);
-      generateNumbers();
+      tryInterstitialAd();
     }
   }
 
@@ -198,6 +214,6 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
     _luckyNums.forEach((element) {
       saveList.add(element.map((e) => e.toString()).toList().join(','));
     });
-    NetworkUtil().preference.setStringList('lucky', saveList);
+    NetworkUtil().preference!.setStringList('lucky', saveList);
   }
 }

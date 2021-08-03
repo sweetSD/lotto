@@ -1,22 +1,21 @@
 package com.sweetSD.klotto
 
-import android.os.Bundle
-import io.flutter.app.FlutterActivity
+import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
+import android.os.Bundle
 import io.flutter.plugins.GeneratedPluginRegistrant
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
+import java.net.URLEncoder 
 import java.nio.charset.Charset
-import java.util.ArrayList
+import java.io.UnsupportedEncodingException
 
-class MainActivity() : FlutterActivity() {
+class MainActivity: FlutterActivity() {
     private val CHANNEL = "_ENCODING"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        GeneratedPluginRegistrant.registerWith(this)
-        MethodChannel(flutterView, CHANNEL).setMethodCallHandler { call, result ->
+        provideFlutterEngine(this)?.let { GeneratedPluginRegistrant.registerWith(it) }
+        MethodChannel(flutterEngine?.dartExecutor,CHANNEL).setMethodCallHandler { call, result ->
             if(call.method == "encode") {
                 val arguments = (call.arguments as ArrayList<String>)
                 val res = encode(arguments[0], arguments[1])

@@ -9,11 +9,12 @@ import 'package:lotto/widgets/basescreen.dart';
 import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/lotto.dart';
 import 'package:lotto/widgets/text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String qrBaseUrl = 'https://m.dhlottery.co.kr/qr.do?method=winQr&v=';
 
 class LottoQRResultPage extends StatefulWidget {
-  final String qrCodeUrl;
+  final String? qrCodeUrl;
 
   const LottoQRResultPage(this.qrCodeUrl);
 
@@ -30,11 +31,11 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
   Future<LottoQRResult> getQRCodeResult() {
     return _asyncMemoizer.runOnce(() async {
       LottoQRResult result = await NetworkUtil()
-          .getLottoQRCodeResult(qrBaseUrl + widget.qrCodeUrl.split('v=')[1]);
+          .getLottoQRCodeResult(qrBaseUrl + widget.qrCodeUrl!.split('v=')[1]);
 
-      var prefs = await NetworkUtil().preferenceAsync;
+      var prefs = await NetworkUtil().preferenceAsync as SharedPreferences;
       if (prefs.containsKey('qrResults')) {
-        var resultStrings = prefs.getStringList('qrResults');
+        var resultStrings = prefs.getStringList('qrResults')!;
         resultStrings.forEach((element) {
           _qrResults.add(LottoQRResult.fromJson(jsonDecode(element)));
         });
@@ -63,7 +64,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
       body: FutureBuilder<LottoQRResult>(
         future: getQRCodeResult(),
         builder: (context, snapshot) {
-          LottoQRResult result = snapshot.data;
+          LottoQRResult? result = snapshot.data;
           if (snapshot.hasData) {
             return Container(
               width: MediaQuery.of(context).size.width,
@@ -73,7 +74,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    if (result.lotto != null) ...[
+                    if (result!.lotto != null) ...[
                       Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -92,7 +93,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (result.prize > 0) ...[
+                            if (result.prize! > 0) ...[
                               TextBinggrae('축하합니다!'),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -120,7 +121,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                             ? result.picks[i].result
                             : null,
                         color: i % 2 == 1 ? Colors.white : Color(0xffeeeeee),
-                        result: result.lotto?.numbers ?? null,
+                        result: result.lotto?.numbers,
                       ),
                     ]
                   ],
@@ -240,9 +241,9 @@ class _QRResultPageeState extends State<QRResultPage> {
   Future<List<LottoQRResult>> getQRResults() async {
     return _asyncMemoizer.runOnce(() async {
       List<LottoQRResult> result = [];
-      var prefs = await NetworkUtil().preferenceAsync;
+      var prefs = await NetworkUtil().preferenceAsync as SharedPreferences;
       if (prefs.containsKey('qrResults')) {
-        var strList = prefs.getStringList('qrResults');
+        var strList = prefs.getStringList('qrResults')!;
         strList.forEach((element) {
           result.add(LottoQRResult.fromJson(jsonDecode(element)));
         });
@@ -260,8 +261,8 @@ class _QRResultPageeState extends State<QRResultPage> {
         body: FutureBuilder<List<LottoQRResult>>(
           future: getQRResults(),
           builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data.length > 0) {
-              var data = snapshot.data;
+            if (snapshot.hasData && snapshot.data!.length > 0) {
+              var data = snapshot.data!;
               return Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
@@ -289,7 +290,7 @@ class _QRResultPageeState extends State<QRResultPage> {
                               child: Column(
                                 children: [
                                   if (data[index].lotto != null) ...[
-                                    data[index].prize > 0
+                                    data[index].prize! > 0
                                         ? TextBinggrae(
                                             '${NumberFormat('###,###,###,###').format(data[index].prize)}원 당첨되셨습니다.')
                                         : TextBinggrae('아쉽지만, 낙첨되셨습니다.'),

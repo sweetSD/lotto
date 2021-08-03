@@ -1,34 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ed521b9a-42db-4ecb-aabd-97fbe100b44e" name="Default Changelist" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list default="true" id="ed521b9a-42db-4ecb-aabd-97fbe100b44e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/kotlin/com/sweetSD/lifelotto/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/animation/fade.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/animation/fade.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/encode.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/encode.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network/lotto.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network/lotto.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network/lotto.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network/lotto.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network/network.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network/network.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network/place.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network/place.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network/place.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network/place.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/analyze.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/analyze.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/horoscope.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/horoscope.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/lotto.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/lotto.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/lucky.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/lucky.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/map.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/map.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/picker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/picker.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/store.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/store.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utility/notification.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utility/notification.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/basescreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/basescreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/lotto.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/lotto.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/text.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/text.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="New_Device_API_28" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1ij9IDlbJbMmT94lWelRkl0ZQVc" />
-  <component name="PropertiesComponent">
-    <property name="dart.analysis.tool.window.force.activate" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../process_kill/android" />
-    <property name="show.migrate.to.gradle.popup" value="false" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -48,12 +75,21 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="100" y="100" width="1720" height="840" key="AVDManager" timestamp="1627916208456">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="100" y="100" width="1720" height="840" key="AVDManager/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627916208456" />
+    <state x="440" y="94" key="SettingsEditor" timestamp="1627916281124">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="440" y="94" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627916281124" />
   </component>
 </project>

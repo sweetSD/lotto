@@ -13,11 +13,11 @@ class Space extends StatelessWidget {
 }
 
 class LottoBall extends StatelessWidget {
-  final num number;
+  final num? number;
 
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
-  final Color textColor;
+  final Color? textColor;
 
   final bool useShadow;
 
@@ -40,7 +40,7 @@ class LottoBall extends StatelessWidget {
       alignment: Alignment.center,
       child: TextBinggrae(number.toString(), color: textColor == null ? Colors.white : textColor, shadows: useShadow == true ? [Shadow(offset: Offset(0.0, 0.0), blurRadius: 2, color: Color.fromARGB(125, 0, 0, 0),)] : [],), 
       decoration: BoxDecoration(
-        color: backgroundColor == null ? getBallColor(number) : backgroundColor, 
+        color: backgroundColor == null ? getBallColor(number as int) : backgroundColor, 
         borderRadius: BorderRadius.circular(50)
       ),
     );

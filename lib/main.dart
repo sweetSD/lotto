@@ -6,28 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_admob_app_open/ad_request_app_open.dart';
 import 'package:flutter_admob_app_open/flutter_admob_app_open.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lotto/Screens/main.dart';
+import 'package:lotto/screens/splash.dart';
 import 'package:lotto/utility/notification.dart';
 import 'package:timezone/timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:lotto/const.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 
-FirebaseApp firebaseApp;
+FirebaseApp? firebaseApp;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseAdMob.instance
-      .initialize(appId: Platform.isIOS ? FirebaseAdMob.testAppId : admobAppID)
-      .then((value) {
-    if (value)
-      print('firebase admob initialize success.');
-    else
-      print('firebase admob initialize failed.');
-  });
 
   await FlutterAdmobAppOpen.instance
       .initialize(appId: admobAppID, appAppOpenAdUnitId: admobAppStartID);
+
+  MobileAds.instance.initialize();
 
   if (Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
@@ -70,7 +65,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'K-로또 ~ 행운 번호, 당첨 확인, 당첨 통계',
+      title: '100% 로또 ~ 행운 번호, 당첨 확인, 당첨 통계',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -80,7 +75,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.light,
-      home: MainPage(),
+      home: SplashScreen(),
     );
   }
 }

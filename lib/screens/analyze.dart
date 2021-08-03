@@ -13,8 +13,8 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:async/async.dart';
 
 class Pair<K, V> {
-  K key;
-  V value;
+  K? key;
+  V? value;
 
   Pair(K key, V value) {
     this.key = key;
@@ -23,10 +23,10 @@ class Pair<K, V> {
 }
 
 class AnalyzePage extends StatefulWidget {
-  final List<DateTime> drawDates;
-  final List<List<int>> luckyBalls;
+  final List<DateTime>? drawDates;
+  final List<List<int>>? luckyBalls;
 
-  AnalyzePage({Key key, this.drawDates, this.luckyBalls}) : super(key: key);
+  AnalyzePage({Key? key, this.drawDates, this.luckyBalls}) : super(key: key);
 
   @override
   _AnalyzePageState createState() => _AnalyzePageState();
@@ -35,20 +35,20 @@ class AnalyzePage extends StatefulWidget {
 class _AnalyzePageState extends State<AnalyzePage> {
   AsyncMemoizer<List<Pair<int, int>>> _asyncMemoizer =
       AsyncMemoizer<List<Pair<int, int>>>();
-  List<Pair<int, int>> _lottoBallStats = List<Pair<int, int>>();
-  int _maxCount = 0;
+  List<Pair<int, int>> _lottoBallStats = [];
+  int? _maxCount = 0;
   bool _isSortByNumber = true;
 
-  DateTime _selectedStartDate;
-  DateTime _selectedEndDate;
+  late DateTime _selectedStartDate;
+  late DateTime _selectedEndDate;
   bool _inclusiveBonus = true;
 
   @override
   void initState() {
     super.initState();
     if (widget.luckyBalls == null) {
-      _selectedStartDate = widget.drawDates.last;
-      _selectedEndDate = widget.drawDates.first;
+      _selectedStartDate = widget.drawDates!.last;
+      _selectedEndDate = widget.drawDates!.first;
     }
   }
 
@@ -64,15 +64,17 @@ class _AnalyzePageState extends State<AnalyzePage> {
             edDrwNo: calculateDrawNum(_selectedEndDate),
             srchType: _inclusiveBonus ? 1 : 0);
         for (int i = 0; i < result.length; i++) {
-          if (_maxCount < result[i]) _maxCount = result[i];
+          if (_maxCount! < result[i]!) _maxCount = result[i];
           _lottoBallStats[i].value = result[i];
         }
       } else {
-        for (int i = 0; i < widget.luckyBalls.length; i++) {
-          for (int j = 0; j < widget.luckyBalls[i].length; j++) {
-            _lottoBallStats[widget.luckyBalls[i][j] - 1].value++;
-            if (_maxCount < _lottoBallStats[widget.luckyBalls[i][j] - 1].value)
-              _maxCount = _lottoBallStats[widget.luckyBalls[i][j] - 1].value;
+        for (int i = 0; i < widget.luckyBalls!.length; i++) {
+          for (int j = 0; j < widget.luckyBalls![i].length; j++) {
+            _lottoBallStats[widget.luckyBalls![i][j] - 1].value =
+                _lottoBallStats[widget.luckyBalls![i][j] - 1].value! + 1;
+            if (_maxCount! <
+                _lottoBallStats[widget.luckyBalls![i][j] - 1].value!)
+              _maxCount = _lottoBallStats[widget.luckyBalls![i][j] - 1].value;
           }
         }
       }
@@ -141,8 +143,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                       ],
                     ),
                   ),
-                ))
-              ..show();
+                ));
           },
         ),
       ],
@@ -253,11 +254,11 @@ class _AnalyzePageState extends State<AnalyzePage> {
 
   Widget getAnalyzedData(AsyncSnapshot<List<Pair<int, int>>> snapshot) {
     if (snapshot.hasData) {
-      var data = snapshot.data;
+      var data = snapshot.data!;
       if (_isSortByNumber) {
-        data.sort((a, b) => a.key.compareTo(b.key));
+        data.sort((a, b) => a.key!.compareTo(b.key!));
       } else {
-        data.sort((a, b) => b.value.compareTo(a.value));
+        data.sort((a, b) => b.value!.compareTo(a.value!));
       }
 
       return ListView.builder(
@@ -285,7 +286,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                         lineHeight: 14.0,
                         backgroundColor: Colors.grey,
                         progressColor: Colors.blue,
-                        percent: (data[index]?.value ?? 0) / _maxCount,
+                        percent: (data[index]?.value ?? 0) / _maxCount!,
                         animation: true,
                         animationDuration: 1000,
                       ),
@@ -349,10 +350,10 @@ class _AnalyzePageState extends State<AnalyzePage> {
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
-                if (reversed) index = (widget.drawDates.length - 1) - index;
+                if (reversed) index = (widget.drawDates!.length - 1) - index;
                 return GestureDetector(
                   onTap: () {
-                    callback(widget.drawDates[index]);
+                    callback(widget.drawDates![index]);
                   },
                   child: Container(
                     color: index % 2 == 0 ? Colors.white : Colors.grey[200],
@@ -361,16 +362,15 @@ class _AnalyzePageState extends State<AnalyzePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         TextBinggrae(
-                            '${calculateDrawNum(widget.drawDates[index])}회')
+                            '${calculateDrawNum(widget.drawDates![index])}회')
                       ],
                     ),
                   ),
                 );
               },
-              itemCount: widget.drawDates.length,
+              itemCount: widget.drawDates!.length,
             ),
           ),
-        ))
-      ..show();
+        ));
   }
 }

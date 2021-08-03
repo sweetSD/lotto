@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.leyan95:android-zxingLibrary:0.1.2-PRE@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ebc88b7d9699b615ee5c6664b0087733/jetified-android-zxingLibrary-0.1.2-PRE/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ebc88b7d9699b615ee5c6664b0087733/jetified-android-zxingLibrary-0.1.2-PRE/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ebc88b7d9699b615ee5c6664b0087733/jetified-android-zxingLibrary-0.1.2-PRE/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ebc88b7d9699b615ee5c6664b0087733/jetified-android-zxingLibrary-0.1.2-PRE/jars/libs/core_3.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.leyan95/android-zxingLibrary/0.1.2-PRE/ba690922b8381103448f2d27a8f5996736ad697f/android-zxingLibrary-0.1.2-PRE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.leyan95/android-zxingLibrary/0.1.2-PRE/1b26f710249b38869199596c4b1fe5ceaf85ec0/android-zxingLibrary-0.1.2-PRE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
