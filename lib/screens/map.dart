@@ -55,6 +55,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
   @override
   Widget build(BuildContext context) {
     return new BaseScreen(
+      useBannerAd: false,
       title: '주변 로또 판매점 검색',
       body: Padding(
         padding: EdgeInsets.zero,
@@ -86,7 +87,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
     for (int i = 1; i <= 45; i++) {
       var placeResponse = await NetworkUtil()
           .getPlaceFromKakaoAPI('로또판매점', positon, 1000, page: i);
-      print(placeResponse.places.length);
+      debugPrint(placeResponse.places.length.toString());
       setState(() {
         placeResponse.places.forEach((element) {
           final MarkerId markerId = MarkerId(element.id!);
@@ -161,7 +162,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextBinggrae('지역 선택'),
+                  LottoText('지역 선택'),
                   Row(
                     children: [
                       Expanded(
@@ -175,7 +176,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                             margin: EdgeInsets.symmetric(horizontal: 12),
                             alignment: Alignment.center,
                             decoration: roundBoxDecoration(),
-                            child: TextBinggrae(_sido),
+                            child: LottoText(_sido),
                           ),
                         ),
                       ),
@@ -190,7 +191,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                             margin: EdgeInsets.symmetric(horizontal: 12),
                             alignment: Alignment.center,
                             decoration: roundBoxDecoration(),
-                            child: TextBinggrae(_gugun),
+                            child: LottoText(_gugun),
                           ),
                         ),
                       ),
@@ -222,7 +223,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                 return GestureDetector(
                   onTap: () async {
                     var list = await NetworkUtil().getGugun(nationSido[index]);
-                    print(list);
+                    debugPrint(list.toString());
                     setState(() {
                       _guguns = list;
                       if (_guguns.length > 0)
@@ -238,7 +239,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[TextBinggrae(nationSido[index])],
+                      children: <Widget>[LottoText(nationSido[index])],
                     ),
                   ),
                 );
@@ -275,7 +276,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[TextBinggrae(_guguns[index])],
+                      children: <Widget>[LottoText(_guguns[index])],
                     ),
                   ),
                 );

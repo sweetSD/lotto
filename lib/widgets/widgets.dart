@@ -8,7 +8,10 @@ class Space extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: size, height: size,);
+    return SizedBox(
+      width: size,
+      height: size,
+    );
   }
 }
 
@@ -21,14 +24,15 @@ class LottoBall extends StatelessWidget {
 
   final bool useShadow;
 
-  const LottoBall(this.number, {this.backgroundColor, this.textColor, this.useShadow = true});
+  const LottoBall(this.number,
+      {this.backgroundColor, this.textColor, this.useShadow = true});
 
   Color getBallColor(int number) {
-    if(number >= 1 && number <= 10) return Colors.yellow;
-    if(number >= 11 && number <= 20) return Colors.blue;
-    if(number >= 21 && number <= 30) return Colors.red;
-    if(number >= 31 && number <= 40) return Colors.black;
-    if(number >= 41 && number <= 45) return Colors.green;
+    if (number >= 1 && number <= 10) return Colors.yellow;
+    if (number >= 11 && number <= 20) return Colors.blue;
+    if (number >= 21 && number <= 30) return Colors.red;
+    if (number >= 31 && number <= 40) return Colors.black;
+    if (number >= 41 && number <= 45) return Colors.green;
     return Colors.transparent;
   }
 
@@ -38,11 +42,24 @@ class LottoBall extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.1,
       height: MediaQuery.of(context).size.width * 0.1,
       alignment: Alignment.center,
-      child: TextBinggrae(number.toString(), color: textColor == null ? Colors.white : textColor, shadows: useShadow == true ? [Shadow(offset: Offset(0.0, 0.0), blurRadius: 2, color: Color.fromARGB(125, 0, 0, 0),)] : [],), 
-      decoration: BoxDecoration(
-        color: backgroundColor == null ? getBallColor(number as int) : backgroundColor, 
-        borderRadius: BorderRadius.circular(50)
+      child: LottoText(
+        number.toString(),
+        color: textColor == null ? Colors.white : textColor,
+        shadows: useShadow == true
+            ? [
+                Shadow(
+                  offset: Offset(0.0, 0.0),
+                  blurRadius: 2,
+                  color: Color.fromARGB(125, 0, 0, 0),
+                )
+              ]
+            : [],
       ),
+      decoration: BoxDecoration(
+          color: backgroundColor == null
+              ? getBallColor(number as int)
+              : backgroundColor,
+          borderRadius: BorderRadius.circular(50)),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class UrlEncoder {
@@ -10,7 +11,7 @@ class UrlEncoder {
     try {
       res = await _platform.invokeMethod('encode', [data, encoding].toList());
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future<String>.error(e);
     }
     return Future<String>.value(res);
@@ -21,7 +22,7 @@ class UrlEncoder {
     try {
       res = await _platform.invokeMethod('decode', [data, encoding].toList());
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future<String>.error(e);
     }
     return Future<String>.value(res);
@@ -33,7 +34,7 @@ class UrlEncoder {
       res = await (_platform.invokeMethod(
           'encodeByte', [data, encoding].toList()));
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future<Uint8List>.error(e);
     }
     return Future<Uint8List>.value(res);
@@ -45,7 +46,7 @@ class UrlEncoder {
       res = await (_platform.invokeMethod(
           'decodeByte', [data, encoding].toList()));
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future<String>.error(e);
     }
     return Future<String>.value(res);

@@ -84,7 +84,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                       Container(
                         height: 75,
                         alignment: Alignment.center,
-                        child: TextBinggrae('미추첨 복권입니다.'),
+                        child: LottoText('미추첨 복권입니다.'),
                       ),
                     ],
                     if (result.lotto != null) ...[
@@ -94,20 +94,20 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             if (result.prize! > 0) ...[
-                              TextBinggrae('축하합니다!'),
+                              LottoText('축하합니다!'),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  TextBinggrae('총 '),
-                                  TextBinggrae(
+                                  LottoText('총 '),
+                                  LottoText(
                                     '${NumberFormat('###,###,###,###').format(result.prize)}원',
                                     color: Colors.blue,
                                   ),
-                                  TextBinggrae(' 당첨'),
+                                  LottoText(' 당첨'),
                                 ],
                               ),
                             ] else ...[
-                              TextBinggrae('아쉽게도 낙첨 되셨습니다.'),
+                              LottoText('아쉽게도 낙첨 되셨습니다.'),
                             ]
                           ],
                         ),
@@ -134,7 +134,7 @@ class _LottoQRResultPageState extends State<LottoQRResultPage> {
             );
           } else {
             return Center(
-              child: TextBinggrae('당첨 결과를 조회 할 수 없습니다. :('),
+              child: LottoText('당첨 결과를 조회 할 수 없습니다. :('),
             );
           }
         },
@@ -205,10 +205,10 @@ class _LottoResultPageState extends State<LottoResultPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       if (_rank > 0) ...[
-                        TextBinggrae('축하합니다!'),
-                        TextBinggrae('$_rank등 당첨되셨습니다.'),
+                        LottoText('축하합니다!'),
+                        LottoText('$_rank등 당첨되셨습니다.'),
                       ] else ...[
-                        TextBinggrae('아쉽게도 낙첨 되셨습니다.'),
+                        LottoText('아쉽게도 낙첨 되셨습니다.'),
                       ]
                     ],
                   ),
@@ -248,8 +248,8 @@ class _QRResultPageeState extends State<QRResultPage> {
           result.add(LottoQRResult.fromJson(jsonDecode(element)));
         });
       }
-      print(result.length);
-      print(result);
+      debugPrint(result.length.toString());
+      debugPrint(result.toString());
       return result;
     });
   }
@@ -291,14 +291,13 @@ class _QRResultPageeState extends State<QRResultPage> {
                                 children: [
                                   if (data[index].lotto != null) ...[
                                     data[index].prize! > 0
-                                        ? TextBinggrae(
+                                        ? LottoText(
                                             '${NumberFormat('###,###,###,###').format(data[index].prize)}원 당첨되셨습니다.')
-                                        : TextBinggrae('아쉽지만, 낙첨되셨습니다.'),
+                                        : LottoText('아쉽지만, 낙첨되셨습니다.'),
                                     LottoWinResultWidget(data[index].lotto,
                                         useDecoration: false),
                                   ] else ...[
-                                    TextBinggrae(
-                                        '추첨이 진행되지 않았습니다.\n클릭하여 확인해보세요.'),
+                                    LottoText('추첨이 진행되지 않았습니다.\n클릭하여 확인해보세요.'),
                                   ]
                                 ],
                               ),
@@ -316,8 +315,8 @@ class _QRResultPageeState extends State<QRResultPage> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Center(
-                  child: TextBinggrae(
-                      '저장된 QR코드가 없습니다.\n앱에서 QR코드를 스캔하면 자동으로 등록됩니다.'),
+                  child:
+                      LottoText('저장된 QR코드가 없습니다.\n앱에서 QR코드를 스캔하면 자동으로 등록됩니다.'),
                 ),
               );
             }

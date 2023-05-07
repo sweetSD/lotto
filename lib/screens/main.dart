@@ -58,7 +58,7 @@ class _MainPageState extends State<MainPage> {
       _drawDates.add(beginDateTime.add(Duration(days: i * 7)));
     }
 
-    print(_curDrawNum);
+    debugPrint(_curDrawNum.toString());
 
     Future.delayed(Duration.zero, () async {
       Lotto? lotto = null;
@@ -97,7 +97,7 @@ class _MainPageState extends State<MainPage> {
                       children: <Widget>[
                         Icon(FontAwesomeIcons.camera),
                         Space(10),
-                        TextBinggrae('QR코드 촬영하기')
+                        LottoText('QR코드 촬영하기')
                       ],
                     ),
                     onTap: () async {
@@ -123,7 +123,7 @@ class _MainPageState extends State<MainPage> {
                       children: <Widget>[
                         Icon(Icons.storage),
                         Space(10),
-                        TextBinggrae('저장된 사진에서 불러오기')
+                        LottoText('저장된 사진에서 불러오기')
                       ],
                     ),
                     onTap: () async {
@@ -138,7 +138,7 @@ class _MainPageState extends State<MainPage> {
                       Navigator.pop(context);
                       if (pickedFile != null) {
                         try {
-                          print(pickedFile?.path);
+                          debugPrint(pickedFile?.path);
                           // 사진에서 QR코드 인식이 안될 경우 아래의 로직이 실행되지 않습니다. (???????)
                           var timer =
                               Timer.periodic(Duration(seconds: 1), (timer) {
@@ -149,7 +149,7 @@ class _MainPageState extends State<MainPage> {
                           });
                           var scanResult =
                               await scanner.scanPath(pickedFile.path);
-                          print(scanResult);
+                          debugPrint(scanResult);
                           if (timer != null) timer.cancel();
                           Navigator.push(
                               context,
@@ -157,7 +157,7 @@ class _MainPageState extends State<MainPage> {
                                   builder: (context) =>
                                       LottoQRResultPage(scanResult)));
                         } catch (e) {
-                          print('!' + e.toString());
+                          debugPrint('!' + e.toString());
                         }
                         //Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage('https://m.dhlottery.co.kr/qr.do?method=winQr&v=0813q112730313843q101824252728q011314242543q030619214044q1430353843440000001677')));
                       }
@@ -169,7 +169,7 @@ class _MainPageState extends State<MainPage> {
                       children: <Widget>[
                         Icon(Icons.fact_check_rounded),
                         Space(10),
-                        TextBinggrae('직접 입력하기')
+                        LottoText('직접 입력하기')
                       ],
                     ),
                     onTap: () {
@@ -221,7 +221,7 @@ class _MainPageState extends State<MainPage> {
                         children: <Widget>[
                           Icon(Icons.near_me_rounded),
                           Space(10),
-                          TextBinggrae('주변 판매점 찾기')
+                          LottoText('주변 판매점 찾기')
                         ],
                       ),
                       onTap: () async {
@@ -274,7 +274,7 @@ class _MainPageState extends State<MainPage> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               alignment: Alignment.center,
-              child: TextBinggrae("오류가 발생하였습니다.\n잠시후 다시 시도해주세요."),
+              child: LottoText("오류가 발생하였습니다.\n잠시후 다시 시도해주세요."),
             ),
           );
         }
@@ -311,14 +311,14 @@ class _MainPageState extends State<MainPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     '총 판매금액',
                                     color: Colors.grey,
                                     align: TextAlign.left,
                                   ),
                                 ),
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
                                         ? currencyFormat
@@ -334,14 +334,14 @@ class _MainPageState extends State<MainPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     '1등 당첨금액',
                                     color: Colors.grey,
                                     align: TextAlign.left,
                                   ),
                                 ),
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
                                         ? currencyFormat
@@ -357,14 +357,14 @@ class _MainPageState extends State<MainPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     '1등 당첨자',
                                     color: Colors.grey,
                                     align: TextAlign.left,
                                   ),
                                 ),
                                 Expanded(
-                                  child: TextBinggrae(
+                                  child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
                                         ? currencyFormat
@@ -390,7 +390,7 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CircularProgressIndicator(),
                           Space(30),
-                          TextBinggrae('최근 당첨 번호를 로딩중입니다.\n잠시만 기다려주세요.')
+                          LottoText('최근 당첨 번호를 로딩중입니다.\n잠시만 기다려주세요.')
                         ],
                       ),
                     ),
@@ -413,7 +413,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: TextBinggrae('회차 선택'),
+                        child: LottoText('회차 선택'),
                       ),
                     ),
                   ),
@@ -436,7 +436,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: TextBinggrae('당첨 번호 통계 확인'),
+                        child: LottoText('당첨 번호 통계 확인'),
                       ),
                     ),
                   ),
@@ -465,7 +465,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: TextBinggrae('행운 번호 확인'),
+                        child: LottoText('행운 번호 확인'),
                       ),
                     ),
                   ),
@@ -486,7 +486,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: TextBinggrae('QR코드 기록'),
+                        child: LottoText('QR코드 기록'),
                       ),
                     ),
                   ),
@@ -499,7 +499,7 @@ class _MainPageState extends State<MainPage> {
                   //     height: 45,
                   //     alignment: Alignment.center,
                   //     decoration: roundBoxDecoration().copyWith(color: Colors.cyan[50]),
-                  //     child: TextBinggrae('개발자에게 로또 후원하기'),
+                  //     child: LottoText('개발자에게 로또 후원하기'),
                   //   ),
                   // ),
                   Space(60),
@@ -567,7 +567,7 @@ class _MainPageState extends State<MainPage> {
                       children: <Widget>[
                         if (_drawDates.length - index == _curDrawNum)
                           Icon(Icons.arrow_right),
-                        TextBinggrae(
+                        LottoText(
                             '${calculateDrawNum(_drawDates[index])}회 (${DateFormat('yyyy-MM-dd').format(_drawDates[index])})')
                       ],
                     ),
