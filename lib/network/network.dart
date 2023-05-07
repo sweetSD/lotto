@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,7 +15,7 @@ import 'package:lotto/screens/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NetworkUtil {
-  static final String _baseUrl = "https://www.dhlottery.co.kr";
+  static const String _baseUrl = "https://www.dhlottery.co.kr";
   static String get baseUrl => _baseUrl;
 
   static final NetworkUtil _instance = NetworkUtil._internal();
@@ -23,22 +24,21 @@ class NetworkUtil {
 
   SharedPreferences? _preferences;
   SharedPreferences? get preference => _preferences;
-  Future<SharedPreferences?> get preferenceAsync async => _preferences == null
-      ? _preferences = await SharedPreferences.getInstance()
-      : _preferences;
+  Future<SharedPreferences?> get preferenceAsync async =>
+      _preferences ?? (_preferences = await SharedPreferences.getInstance());
 
   // 주어진 회차 정보에 대한 로또 당첨 번호를 조회합니다.
   Future<Lotto> getLottoNumber(int? drawNo) async {
     String key = 'lotto_$drawNo';
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
+    _preferences ??= await SharedPreferences.getInstance();
     if (_preferences!.containsKey(key)) {
       var lotto =
           Lotto.fromJson(convert.jsonDecode(_preferences!.getString(key)!));
-      if (lotto.totalSellAmount != 0) return Future<Lotto>.value(lotto);
+      if (lotto.result == "success" && lotto.totalSellAmount != 0)
+        return Future<Lotto>.value(lotto);
     }
     var response = await http.get(
-        Uri.parse(_baseUrl + '/common.do?method=getLottoNumber&drwNo=$drawNo'));
+        Uri.parse('$_baseUrl/common.do?method=getLottoNumber&drwNo=$drawNo'));
     if (response.statusCode == 200) {
       Lotto lotto = Lotto.fromJson(convert.jsonDecode(response.body));
       if (lotto.result == "success") {
@@ -52,14 +52,13 @@ class NetworkUtil {
   // 주어진 회차 정보에 대한 로또 당첨 번호를 조회합니다. (V2: 1등 당첨 자동, 수동, 반자동 추가)
   Future<Lotto> getLottoNumberV2(Lotto lotto) async {
     String key = 'lotto_${lotto.drawNumber}';
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
+    _preferences ??= await SharedPreferences.getInstance();
     if (_preferences!.containsKey(key)) {
       return Future<Lotto>.value(
           Lotto.fromJson(convert.jsonDecode(_preferences!.getString(key)!)));
     }
     var response = await http.get(Uri.parse(
-        _baseUrl + '/gameResult.do?method=byWin&drwNo=${lotto.drawNumber}'));
+        '$_baseUrl/gameResult.do?method=byWin&drwNo=${lotto.drawNumber}'));
     if (response.statusCode == 200) {
       dom.Document document = parser.parse(response.body);
 
@@ -72,12 +71,15 @@ class NetworkUtil {
       for (int i = 1; i < winResult.children.length; i++) {
         var textData = winResult.children[i].text.trim();
 
-        if (textData.startsWith('자동'))
+        if (textData.startsWith('자동')) {
           lotto.winnerAutoCount = int.tryParse(textData.substring(2));
-        if (textData.startsWith('수동'))
+        }
+        if (textData.startsWith('수동')) {
           lotto.winnerManualCount = int.tryParse(textData.substring(2));
-        if (textData.startsWith('반자동'))
+        }
+        if (textData.startsWith('반자동')) {
           lotto.winnerSemiAutoCount = int.tryParse(textData.substring(3));
+        }
       }
 
       return Future<Lotto>.value(lotto);
@@ -120,18 +122,19 @@ class NetworkUtil {
                   0,
               pickNumbers));
         }
-        print(calculateDrawNum(DateTime.now()));
-        print(int.parse(drawNo.substring(2, 2 + drawNo.length - 4)));
+        debugPrint(calculateDrawNum(DateTime.now()).toString());
+        debugPrint(
+            int.parse(drawNo.substring(2, 2 + drawNo.length - 4)).toString());
         if (calculateDrawNum(DateTime.now()) <
             int.parse(drawNo.substring(2, 2 + drawNo.length - 4))) {
-          print('!');
+          debugPrint('!');
           return Future<LottoQRResult>.value(
               LottoQRResult(null, 0, myPicks, url));
         } else {
           Lotto drawResult = await getLottoNumber(
               int.parse(drawNo.substring(2, 2 + drawNo.length - 4)));
 
-          print('!!');
+          debugPrint('!!');
           var key_clr1 = winnerNumber.children[2].children[0].children[1]
               .getElementsByClassName('key_clr1');
           if (key_clr1.length > 0) {
@@ -148,7 +151,7 @@ class NetworkUtil {
         }
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<LottoQRResult>.error(Error());
   }
@@ -159,8 +162,7 @@ class NetworkUtil {
   Future<void> syncLottoResultsToFirebase() async {
     String json = '[';
     List<String> results = [];
-    if (_preferences == null)
-      _preferences = await SharedPreferences.getInstance();
+    _preferences ??= await SharedPreferences.getInstance();
     DatabaseReference lottoResultsRef =
         FirebaseDatabase.instance.reference().child('lottoResults');
     for (int i = 0; i < 931; i++) {
@@ -174,18 +176,21 @@ class NetworkUtil {
 
   Future<void> syncLottoResultsFromFirebase() async {
     DatabaseReference lottoResultsRef =
-        FirebaseDatabase.instance.reference().child('lottoResults');
+        FirebaseDatabase.instance.ref().child('lottoResults');
     final snapshot = await lottoResultsRef.once();
-    print(snapshot);
-    print(snapshot?.key ?? 'key null');
-    print(snapshot?.value['results'] ?? 'value null');
-    var list = List.from(convert.jsonDecode(snapshot?.value['results']))
+    debugPrint(snapshot.snapshot.toString());
+    debugPrint(snapshot.snapshot.key ?? 'key null');
+    debugPrint(
+        snapshot.snapshot.child('results').value.toString() ?? 'value null');
+    var list = List.from(convert
+            .jsonDecode(snapshot.snapshot.child('results').value.toString()))
         .map((e) => Lotto.fromJson(e))
         .toList();
     for (int i = 0; i < list.length; i++) {
-      if (!_preferences!.containsKey('lotto_${list[i].drawNumber}'))
+      if (!_preferences!.containsKey('lotto_${list[i].drawNumber}')) {
         _preferences!.setString(
             'lotto_${list[i].drawNumber}', convert.jsonEncode(list[i]));
+      }
     }
   }
 
@@ -205,16 +210,16 @@ class NetworkUtil {
 
         for (int i = 0; i < containerList.children.length; i++) {
           var container = containerList.children[i];
-          print(container.children[0].children[0].attributes['href']);
-          print(
+          debugPrint(container.children[0].children[0].attributes['href']);
+          debugPrint(
               container.children[0].children[0].children[0].attributes['src']);
-          print(container.children[1].children[0].text);
-          print(container.children[2].text);
+          debugPrint(container.children[1].children[0].text);
+          debugPrint(container.children[2].text);
         }
         return Future<void>.value(null);
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<void>.error(Error());
   }
@@ -233,7 +238,7 @@ class NetworkUtil {
       var response = await http.get(uri,
           headers: {HttpHeaders.authorizationHeader: 'KakaoAK $kakaoApiKey'});
       if (response.statusCode == 200) {
-        Clipboard.setData(ClipboardData(text: response.body));
+        if (kDebugMode) Clipboard.setData(ClipboardData(text: response.body));
         var places = List.from(convert.jsonDecode(response.body)['documents'])
             .map((e) => Place.fromJson(e))
             .toList();
@@ -242,7 +247,7 @@ class NetworkUtil {
             convert.jsonDecode(response.body)['meta']['is_end'] as bool?));
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<PlaceResponse>.error(PlaceResponse([], true));
   }
@@ -264,7 +269,7 @@ class NetworkUtil {
         'sltGUGUN': await UrlEncoder().encode(gugun, 'euc-kr'),
       });
       if (response.statusCode == 200) {
-        Clipboard.setData(ClipboardData(text: response.body));
+        if (kDebugMode) Clipboard.setData(ClipboardData(text: response.body));
         var places = List.from(convert.jsonDecode(response.body)['documents'])
             .map((e) => Place.fromJson(e))
             .toList();
@@ -273,7 +278,7 @@ class NetworkUtil {
             convert.jsonDecode(response.body)['meta']['is_end'] as bool?));
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<PlaceResponse>.error(PlaceResponse([], true));
   }
@@ -290,13 +295,13 @@ class NetworkUtil {
         'SIDO': sido,
       });
       if (response.statusCode == 200) {
-        print(response.body);
-        print(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
+        debugPrint(response.body);
+        debugPrint(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
         return Future<List<String>>.value(List<String>.from(convert.jsonDecode(
             await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'))));
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<List<String>>.error([]);
   }
@@ -332,7 +337,7 @@ class NetworkUtil {
         return Future<List<LottoStore>>.value(result);
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<List<LottoStore>>.error(result);
   }
@@ -348,7 +353,7 @@ class NetworkUtil {
         dom.Document document = parser
             .parse(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
 
-        Clipboard.setData(ClipboardData(text: document.text));
+        if (kDebugMode) Clipboard.setData(ClipboardData(text: document.text));
 
         var listRoot = document.getElementById('printTarget')!.children[3];
 
@@ -360,7 +365,7 @@ class NetworkUtil {
         return Future<List<int?>>.value(result);
       }
     } catch (e) {
-      print('error - ' + e.toString());
+      debugPrint('error - $e');
     }
     return Future<List<int>>.error(result);
   }

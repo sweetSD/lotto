@@ -80,9 +80,9 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      TextBinggrae('당신만을 위한 행운의 추첨 번호를 준비하였습니다.'),
+                      LottoText('당신만을 위한 행운의 추첨 번호를 준비하였습니다.'),
                       Space(50),
-                      TextBinggrae(
+                      LottoText(
                         '행운 번호 받기',
                         color: Colors.blue,
                       ),
@@ -102,13 +102,13 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      TextBinggrae('행운 번호가 생성되었습니다.'),
+                      LottoText('행운 번호가 생성되었습니다.'),
                       LottoPickWidget(
                         _luckyNums.length > 0 ? _luckyNums[0] : [],
                         onlyPicks: true,
                         color: Colors.white,
                       ),
-                      TextBinggrae(
+                      LottoText(
                         '행운 번호 다시 받기',
                         color: Colors.blue,
                       ),
@@ -128,7 +128,7 @@ class _LuckyBallPageState extends State<LuckyBallPage> {
               FadeInOffset(
                 delayInMilisecond: 250,
                 offset: Offset(0, 10),
-                child: TextBinggrae('행운 번호 기록'),
+                child: LottoText('행운 번호 기록'),
               ),
               Space(15),
               FadeInOffset(

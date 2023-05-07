@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 enum TextType { Light, Regular, Bold, ExtraBold }
 
@@ -48,6 +47,49 @@ class TextBinggrae extends StatelessWidget {
           fontWeight: getWeightFromType(type),
           shadows: shadows,
           fontFamily: 'Binggrae'),
+    );
+  }
+}
+
+class LottoText extends StatelessWidget {
+  final String text;
+  final Color? color;
+  final double size;
+  final double height;
+  final TextType type;
+  final TextAlign align;
+  final TextOverflow overflow;
+  final List<Shadow> shadows;
+  final int? maxLines;
+  final String? fontFamily;
+
+  const LottoText(
+    this.text, {
+    this.color = Colors.black,
+    this.size = 14,
+    this.height = 1.5,
+    this.type = TextType.Regular,
+    this.align = TextAlign.center,
+    this.overflow = TextOverflow.ellipsis,
+    this.shadows = const [],
+    this.maxLines,
+    this.fontFamily = 'NexonLv2',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: align,
+      overflow: overflow,
+      maxLines: maxLines,
+      style: TextStyle(
+          color: color,
+          fontSize: size,
+          height: height,
+          fontWeight: getWeightFromType(type),
+          shadows: shadows,
+          fontFamily: fontFamily),
     );
   }
 }

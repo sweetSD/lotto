@@ -116,7 +116,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 if (_isSortByNumber) Icon(Icons.arrow_right),
-                                TextBinggrae('번호순 정렬')
+                                LottoText('번호순 정렬')
                               ],
                             ),
                           ),
@@ -135,7 +135,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 if (!_isSortByNumber) Icon(Icons.arrow_right),
-                                TextBinggrae('당첨순 정렬')
+                                LottoText('당첨순 정렬')
                               ],
                             ),
                           ),
@@ -185,7 +185,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 alignment: Alignment.center,
                                 decoration: roundBoxDecoration(),
-                                child: TextBinggrae(
+                                child: LottoText(
                                     '${calculateDrawNum(_selectedStartDate)}회 ~'),
                               ),
                             ),
@@ -213,7 +213,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 alignment: Alignment.center,
                                 decoration: roundBoxDecoration(),
-                                child: TextBinggrae(
+                                child: LottoText(
                                     '~ ${calculateDrawNum(_selectedEndDate)}회'),
                               ),
                             ),
@@ -233,7 +233,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 6),
                                 decoration: roundBoxDecoration(),
                                 alignment: Alignment.center,
-                                child: TextBinggrae(
+                                child: LottoText(
                                     _inclusiveBonus ? '보너스 포함' : '보너스 미포함'),
                               ),
                             ),
@@ -296,11 +296,11 @@ class _AnalyzePageState extends State<AnalyzePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            TextBinggrae(
+                            LottoText(
                               '${(data[index]?.value ?? 0)}',
                               size: 9,
                             ),
-                            TextBinggrae(
+                            LottoText(
                               '$_maxCount',
                               size: 9,
                             ),
@@ -321,14 +321,14 @@ class _AnalyzePageState extends State<AnalyzePage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height - 200,
         alignment: Alignment.center,
-        child: TextBinggrae('데이터를 불러오는 중 오류가 발생했습니다. :('),
+        child: LottoText('데이터를 불러오는 중 오류가 발생했습니다. :('),
       );
     } else {
       return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height - 200,
         alignment: Alignment.center,
-        child: TextBinggrae(
+        child: LottoText(
             '데이터를 불러오고 있습니다. :)\n\n추첨 직후에는 로딩이 느릴 수 있습니다.\n\n- 잠시만 기다려주세요.. -'),
       );
     }
@@ -361,7 +361,7 @@ class _AnalyzePageState extends State<AnalyzePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        TextBinggrae(
+                        LottoText(
                             '${calculateDrawNum(widget.drawDates![index])}회')
                       ],
                     ),

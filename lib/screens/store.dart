@@ -3,7 +3,6 @@ import 'package:async/async.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lotto/animation/fade.dart';
 import 'package:lotto/network/network.dart';
@@ -13,6 +12,7 @@ import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/text.dart';
 import 'package:lotto/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class LottoStorePage extends StatefulWidget {
   LottoStorePage({Key? key}) : super(key: key);
@@ -25,39 +25,40 @@ class _LottoStorePageState extends State<LottoStorePage> {
   final String _storeUrl =
       'https://m.dhlottery.co.kr/store.do?method=topStore&pageGubun=L645';
 
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final controller = WebViewController();
 
   @override
   void initState() {
-    flutterWebviewPlugin.onUrlChanged.listen((event) {
-      if (!event.contains('m.dhlottery.co.kr/store.do?method=topStore')) {
-        flutterWebviewPlugin.goBack();
-      }
-    });
-
     super.initState();
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
+          },
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {},
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            if (!request.url
+                .contains('m.dhlottery.co.kr/store.do?method=topStore')) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(_storeUrl));
   }
 
   @override
   Widget build(BuildContext context) {
-    flutterWebviewPlugin.launch(_storeUrl,
-        rect: Rect.fromLTWH(0, -115, MediaQuery.of(context).size.width,
-            MediaQuery.of(context).size.height + 115));
-
-    return WillPopScope(
-      onWillPop: () async {
-        print(await flutterWebviewPlugin.canGoBack());
-        if (await flutterWebviewPlugin.canGoBack()) {
-          await flutterWebviewPlugin.goBack();
-          return Future<bool>.value(false);
-        } else {
-          await flutterWebviewPlugin.close();
-          return Future<bool>.value(true);
-        }
-      },
-      child: BaseScreen(
-        body: Container(),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Flutter Simple Example')),
+      body: WebViewWidget(controller: controller),
     );
   }
 }
@@ -125,18 +126,18 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: TextBinggrae(
-                                      data![index].index.toString()),
+                                  child:
+                                      LottoText(data![index].index.toString()),
                                 ),
                                 Expanded(
                                   flex: 8,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      TextBinggrae(data[index].name),
-                                      TextBinggrae(
+                                      LottoText(data[index].name),
+                                      LottoText(
                                           '1등 당첨: ${data[index].winCount}회'),
-                                      TextBinggrae(
+                                      LottoText(
                                         data[index].address,
                                       ),
                                     ],
@@ -161,7 +162,7 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
                       decoration: roundBoxDecoration(),
                       margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       child: Center(
-                        child: TextBinggrae('더보기'),
+                        child: LottoText('더보기'),
                       ),
                     ),
                   ),
@@ -171,7 +172,7 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
             );
           } else {
             return Center(
-              child: TextBinggrae('목록을 불러오는 중입니다..'),
+              child: LottoText('목록을 불러오는 중입니다..'),
             );
           }
         },

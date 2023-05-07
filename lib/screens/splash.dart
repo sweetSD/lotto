@@ -47,6 +47,12 @@ class _SplashScreenState extends State<SplashScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
+            width: MediaQuery.of(context).size.width * 0.3,
+            height: MediaQuery.of(context).size.width * 0.3,
+            child: Image.asset("assets/images/new_icon_512x512_clear.png"),
+          ),
+          Space(50),
+          Container(
             width: screenSize.width * 0.2,
             height: screenSize.width * 0.2,
             child: LoadingIndicator(indicatorType: Indicator.ballPulseSync),

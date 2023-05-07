@@ -69,7 +69,7 @@ class _NumberPickPageState extends State<NumberPickPage> {
                       margin: EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.center,
                       decoration: roundBoxDecoration(),
-                      child: TextBinggrae(
+                      child: LottoText(
                           '${calculateDrawNum(_selectedDate)}회 (${DateFormat('yyyy-MM-dd').format(_selectedDate)})'),
                     ),
                   ),
@@ -94,7 +94,7 @@ class _NumberPickPageState extends State<NumberPickPage> {
                       margin: EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.center,
                       decoration: roundBoxDecoration(),
-                      child: TextBinggrae('확인하기'),
+                      child: LottoText('확인하기'),
                     ),
                   ),
                 ),
@@ -183,7 +183,7 @@ class _NumberPickPageState extends State<NumberPickPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        TextBinggrae(
+                        LottoText(
                             '${calculateDrawNum(widget._drawDates[index])}회 (${DateFormat('yyyy-MM-dd').format(widget._drawDates[index])})')
                       ],
                     ),

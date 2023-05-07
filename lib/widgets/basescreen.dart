@@ -19,16 +19,19 @@ class BaseScreen extends StatelessWidget {
 
   final List<Widget>? actions;
 
-  const BaseScreen({
-    Key? key,
-    this.appBar,
-    this.title = '',
-    this.centerTitle = true,
-    this.resizeToAvoidBottomInset = true,
-    this.body,
-    this.leading,
-    this.actions,
-  }) : super(key: key);
+  final bool useBannerAd;
+
+  const BaseScreen(
+      {Key? key,
+      this.appBar,
+      this.title = '',
+      this.centerTitle = true,
+      this.resizeToAvoidBottomInset = true,
+      this.body,
+      this.leading,
+      this.actions,
+      this.useBannerAd = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class BaseScreen extends StatelessWidget {
         }),
         request: AdRequest());
 
-    bannerAd.load();
+    if (useBannerAd) bannerAd.load();
 
     return Scaffold(
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
@@ -49,7 +52,7 @@ class BaseScreen extends StatelessWidget {
             ? appBar
             : AppBar(
                 backgroundColor: Colors.white,
-                title: TextBinggrae(
+                title: LottoText(
                   title,
                   size: 18,
                 ),
@@ -74,12 +77,14 @@ class BaseScreen extends StatelessWidget {
             children: [
               Padding(
                 // For Admob Banner Ad
-                padding: EdgeInsets.only(bottom: 50),
+                padding: EdgeInsets.only(bottom: useBannerAd ? 50 : 0),
                 child: body,
               ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: bannerAdWidget(bannerAd))
+              if (useBannerAd) ...[
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: bannerAdWidget(bannerAd))
+              ]
             ],
           ),
         ));
