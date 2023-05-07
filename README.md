@@ -5,6 +5,7 @@
 ## 유의사항
 
 현재 이 프로젝트에는 Firebase APP Id 등 개인적인 정보가 들어있는
+- android/app/google-services.json
 - android/key.properties
 - android/app/src/main/AndroidManifest.xml
 - lib/const.dart
