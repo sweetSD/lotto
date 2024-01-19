@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lotto/const.dart';
-import 'package:lotto/main.dart';
 import 'package:lotto/widgets/text.dart';
 
 class BaseScreen extends StatelessWidget {
@@ -42,35 +41,31 @@ class BaseScreen extends StatelessWidget {
             BannerAdListener(onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
         }),
-        request: AdRequest());
+        request: const AdRequest());
 
     if (useBannerAd) bannerAd.load();
 
     return Scaffold(
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        appBar: appBar != null
-            ? appBar
-            : AppBar(
+        appBar: appBar ?? AppBar(
                 backgroundColor: Colors.white,
                 title: LottoText(
                   title,
                   size: 18,
                 ),
                 centerTitle: centerTitle,
-                leading: leading != null
-                    ? leading
-                    : IconButton(
+                leading: leading ?? IconButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_back,
                           color: Colors.black,
                         ),
                       ),
-                actions: actions != null ? actions : [],
+                actions: actions ?? [],
               ),
-        body: Container(
+        body: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Stack(

@@ -1,42 +1,39 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:http/http.dart';
 import 'package:lotto/const.dart';
 import 'package:lotto/network/network.dart';
-import 'package:lotto/screens/main.dart';
 import 'package:lotto/widgets/basescreen.dart';
 import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/dialogs.dart';
 import 'package:lotto/widgets/text.dart';
-import 'package:lotto/widgets/widgets.dart';
 
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: googleMapApiKey);
 
 class NearStoreMapPage extends StatefulWidget {
+  const NearStoreMapPage({super.key});
+
   @override
   _NearStoreMapPageState createState() => _NearStoreMapPageState();
 }
 
 class _NearStoreMapPageState extends State<NearStoreMapPage> {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.48631151072069, 126.95117681416404),
     zoom: 14.4746,
   );
 
-  Map<MarkerId, Marker> _markers = {};
+  final Map<MarkerId, Marker> _markers = {};
 
   CameraPosition? _cameraPosition;
 
-  int _loadMarkerCount = 0;
+  final int _loadMarkerCount = 0;
 
   @override
   void initState() {
@@ -54,7 +51,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new BaseScreen(
+    return BaseScreen(
       useBannerAd: false,
       title: '주변 로또 판매점 검색',
       body: Padding(
@@ -89,7 +86,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
           .getPlaceFromKakaoAPI('로또판매점', positon, 1000, page: i);
       debugPrint(placeResponse.places.length.toString());
       setState(() {
-        placeResponse.places.forEach((element) {
+        for (var element in placeResponse.places) {
           final MarkerId markerId = MarkerId(element.id!);
 
           final Marker marker = Marker(
@@ -105,7 +102,7 @@ class _NearStoreMapPageState extends State<NearStoreMapPage> {
             },
           );
           _markers[markerId] = marker;
-        });
+        }
       });
       if (placeResponse.isEnd!) break;
     }
@@ -135,7 +132,7 @@ List<String> nationSido = [
 ];
 
 class NationWideStorePage extends StatefulWidget {
-  NationWideStorePage({Key? key}) : super(key: key);
+  const NationWideStorePage({Key? key}) : super(key: key);
 
   @override
   _NationWideStorePageState createState() => _NationWideStorePageState();
@@ -152,17 +149,17 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
     return BaseScreen(
       title: '전국 판매점 찾기',
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             Container(
               height: 100,
               decoration: roundBoxDecoration(),
-              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  LottoText('지역 선택'),
+                  const LottoText('지역 선택'),
                   Row(
                     children: [
                       Expanded(
@@ -173,7 +170,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                           },
                           child: Container(
                             height: 30,
-                            margin: EdgeInsets.symmetric(horizontal: 12),
+                            margin: const EdgeInsets.symmetric(horizontal: 12),
                             alignment: Alignment.center,
                             decoration: roundBoxDecoration(),
                             child: LottoText(_sido),
@@ -188,7 +185,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                           },
                           child: Container(
                             height: 30,
-                            margin: EdgeInsets.symmetric(horizontal: 12),
+                            margin: const EdgeInsets.symmetric(horizontal: 12),
                             alignment: Alignment.center,
                             decoration: roundBoxDecoration(),
                             child: LottoText(_gugun),
@@ -217,7 +214,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
             color: Colors.transparent,
             child: ListView.builder(
               shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -226,17 +223,18 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                     debugPrint(list.toString());
                     setState(() {
                       _guguns = list;
-                      if (_guguns.length > 0)
+                      if (_guguns.isNotEmpty) {
                         _gugun = _guguns[0];
-                      else
+                      } else {
                         _gugun = '';
+                      }
                       _sido = nationSido[index];
                       Navigator.pop(context);
                     });
                   },
                   child: Container(
                     color: index % 2 == 0 ? Colors.white : Colors.grey[200],
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[LottoText(nationSido[index])],
@@ -261,7 +259,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
             color: Colors.transparent,
             child: ListView.builder(
               shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -273,7 +271,7 @@ class _NationWideStorePageState extends State<NationWideStorePage> {
                   },
                   child: Container(
                     color: index % 2 == 0 ? Colors.white : Colors.grey[200],
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[LottoText(_guguns[index])],

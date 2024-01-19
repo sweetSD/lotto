@@ -5,7 +5,7 @@ import 'package:lotto/network/network.dart';
 import 'package:lotto/widgets/basescreen.dart';
 
 class HoroscopePage extends StatefulWidget {
-  HoroscopePage({Key? key}) : super(key: key);
+  const HoroscopePage({Key? key}) : super(key: key);
 
   @override
   _HoroscopePageState createState() => _HoroscopePageState();

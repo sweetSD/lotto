@@ -4,24 +4,24 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-final androidSetting = AndroidInitializationSettings('@mipmap/ic_launcher');
-final initializeSettings = InitializationSettings(android: androidSetting);
+const androidSetting = AndroidInitializationSettings('@mipmap/ic_launcher');
+const initializeSettings = InitializationSettings(android: androidSetting);
 
-final androidWeeklyNoti = AndroidNotificationDetails(
+const androidWeeklyNoti = AndroidNotificationDetails(
     'weekly_notification', '주간 알림',
     channelDescription: '매주 토요일 로또 알림을 보냅니다.', importance: Importance.max);
 
 Future<void> scheduleWeeklyNotification() async {
   var notifications =
       await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-  if (notifications.length > 0) return;
+  if (notifications.isNotEmpty) return;
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
       1,
       '아직 로또 구매 안 하셨나요?',
       '오후 8시 45분에 로또 추첨이 진행됩니다. 오늘도 대박을 노려봅시다.',
       _nextInstanceOfSaturday(12 - 9, 0, 0),
-      NotificationDetails(
+      const NotificationDetails(
         android: androidWeeklyNoti,
       ),
       androidAllowWhileIdle: true,
@@ -34,7 +34,7 @@ Future<void> scheduleWeeklyNotification() async {
       '로또 추첨이 진행되었습니다.',
       '어서 확인해 보세요!',
       _nextInstanceOfSaturday(20 - 9, 55, 0),
-      NotificationDetails(
+      const NotificationDetails(
         android: androidWeeklyNoti,
       ),
       androidAllowWhileIdle: true,

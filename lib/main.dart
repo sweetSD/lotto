@@ -37,7 +37,7 @@ Future<void> main() async {
   );
 
   if (Platform.isAndroid) {
-    final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     var build = await deviceInfoPlugin.androidInfo;
     firebaseApp = await Firebase.initializeApp(
       //name: 'life-lotto-db',
@@ -50,7 +50,7 @@ Future<void> main() async {
       ),
     );
   } else {
-    final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     var build = await deviceInfoPlugin.iosInfo;
     firebaseApp = await Firebase.initializeApp(
         name: 'life-lotto-db',
@@ -84,10 +84,12 @@ Future<void> main() async {
     debugPrint('fcm token : ${token!}');
   });
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -103,7 +105,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.light,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

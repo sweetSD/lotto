@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:async/async.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lotto/animation/fade.dart';
 import 'package:lotto/network/network.dart';
@@ -15,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class LottoStorePage extends StatefulWidget {
-  LottoStorePage({Key? key}) : super(key: key);
+  const LottoStorePage({Key? key}) : super(key: key);
 
   @override
   _LottoStorePageState createState() => _LottoStorePageState();
@@ -64,7 +63,7 @@ class _LottoStorePageState extends State<LottoStorePage> {
 }
 
 class LottoRankStorePage extends StatefulWidget {
-  LottoRankStorePage({Key? key}) : super(key: key);
+  const LottoRankStorePage({Key? key}) : super(key: key);
 
   @override
   _LottoRankStorePageState createState() => _LottoRankStorePageState();
@@ -76,12 +75,12 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
 
   int _nowPage = 1;
 
-  List<LottoStore> _stores = [];
+  final List<LottoStore> _stores = [];
 
   Future<List<LottoStore>> getLottoStore() {
     return _asyncMemoizer.runOnce(() async {
       var list = await NetworkUtil().getLottoTopStoreRank(_nowPage);
-      if (list.length > 0) {
+      if (list.isNotEmpty) {
         _stores.addAll(list);
       } else {
         Fluttertoast.showToast(msg: '마지막 페이지입니다.');
@@ -101,33 +100,33 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
             var data = snapshot.data;
 
             return SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => FadeInOffset(
-                        offset: Offset(0, 50),
+                        offset: const Offset(0, 50),
                         child: GestureDetector(
                           onTap: () async {
-                            if (await canLaunch(
-                                'https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data?[index].storeId}')) {
-                              launch(
-                                  'https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data?[index].storeId}');
+                            final uri = Uri.dataFromString(
+                                'https://dhlottery.co.kr/store.do?method=topStoreLocation&gbn=lotto&rtlrId=${data[index].storeId}');
+                            if (await canLaunchUrl(uri)) {
+                              launchUrl(uri);
                             }
                           },
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             height: 100,
                             decoration: roundBoxDecoration(),
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             child: Row(
                               children: [
                                 Expanded(
                                   child:
-                                      LottoText(data![index].index.toString()),
+                                      LottoText(data[index].index.toString()),
                                 ),
                                 Expanded(
                                   flex: 8,
@@ -160,18 +159,19 @@ class _LottoRankStorePageState extends State<LottoRankStorePage> {
                       width: MediaQuery.of(context).size.width,
                       height: 50,
                       decoration: roundBoxDecoration(),
-                      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: Center(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      child: const Center(
                         child: LottoText('더보기'),
                       ),
                     ),
                   ),
-                  Space(50),
+                  const Space(50),
                 ],
               ),
             );
           } else {
-            return Center(
+            return const Center(
               child: LottoText('목록을 불러오는 중입니다..'),
             );
           }

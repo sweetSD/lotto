@@ -13,13 +13,14 @@ import 'package:lotto/network/lotto.dart';
 import 'package:lotto/network/place.dart';
 import 'package:lotto/screens/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cp949_dart/cp949_dart.dart' as cp949;
 
 class NetworkUtil {
   static const String _baseUrl = "https://www.dhlottery.co.kr";
   static String get baseUrl => _baseUrl;
 
   static final NetworkUtil _instance = NetworkUtil._internal();
-  NetworkUtil._internal() {}
+  NetworkUtil._internal();
   factory NetworkUtil() => _instance;
 
   SharedPreferences? _preferences;
@@ -34,8 +35,9 @@ class NetworkUtil {
     if (_preferences!.containsKey(key)) {
       var lotto =
           Lotto.fromJson(convert.jsonDecode(_preferences!.getString(key)!));
-      if (lotto.result == "success" && lotto.totalSellAmount != 0)
+      if (lotto.result == "success" && lotto.totalSellAmount != 0) {
         return Future<Lotto>.value(lotto);
+      }
     }
     var response = await http.get(
         Uri.parse('$_baseUrl/common.do?method=getLottoNumber&drwNo=$drawNo'));
@@ -135,10 +137,10 @@ class NetworkUtil {
               int.parse(drawNo.substring(2, 2 + drawNo.length - 4)));
 
           debugPrint('!!');
-          var key_clr1 = winnerNumber.children[2].children[0].children[1]
+          var keyClr1 = winnerNumber.children[2].children[0].children[1]
               .getElementsByClassName('key_clr1');
-          if (key_clr1.length > 0) {
-            String prize = key_clr1[0].text;
+          if (keyClr1.isNotEmpty) {
+            String prize = keyClr1[0].text;
             return Future<LottoQRResult>.value(LottoQRResult(
                 drawResult,
                 int.tryParse(prize.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0,
@@ -265,8 +267,8 @@ class NetworkUtil {
         'nowPage': '$page',
         'rtlrSttus': '001', // 001 영업점 002 폐점
         'searchType': '1',
-        'sltSIDO': await UrlEncoder().encode(sido, 'euc-kr'),
-        'sltGUGUN': await UrlEncoder().encode(gugun, 'euc-kr'),
+        'sltSIDO': cp949.encode(sido),
+        'sltGUGUN': cp949.encode(gugun),
       });
       if (response.statusCode == 200) {
         if (kDebugMode) Clipboard.setData(ClipboardData(text: response.body));
@@ -285,7 +287,7 @@ class NetworkUtil {
 
   Future<List<String>> getGugun(String sido) async {
     try {
-      sido = (await UrlEncoder().encode(sido));
+      sido = cp949.encodeToString(sido);
       var uri =
           Uri.https('dhlottery.co.kr', '/store.do', {'method': 'searchGUGUN'});
       var response = await http.post(uri, headers: {
@@ -296,9 +298,9 @@ class NetworkUtil {
       });
       if (response.statusCode == 200) {
         debugPrint(response.body);
-        debugPrint(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
-        return Future<List<String>>.value(List<String>.from(convert.jsonDecode(
-            await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'))));
+        debugPrint(cp949.decode(response.bodyBytes));
+        return Future<List<String>>.value(List<String>.from(
+            convert.jsonDecode(cp949.decode(response.bodyBytes))));
       }
     } catch (e) {
       debugPrint('error - $e');
@@ -314,8 +316,7 @@ class NetworkUtil {
       var response = await http.get(Uri.parse(
           'https://dhlottery.co.kr/store.do?method=topStoreRank&rank=$rank&pageGubun=L645&nowPage=$page'));
       if (response.statusCode == 200) {
-        dom.Document document = parser
-            .parse(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
+        dom.Document document = parser.parse(cp949.decode(response.bodyBytes));
 
         var listRoot = document
             .getElementsByClassName('tbl_data tbl_data_col')[0]
@@ -348,12 +349,9 @@ class NetworkUtil {
     List<int?> result = List.filled(45, 0);
     try {
       var response = await http.get(Uri.parse(
-          'https://dhlottery.co.kr/gameResult.do?method=statByNumber&sttDrwNo=${sttDrwNo}&edDrwNo=${edDrwNo}&srchType=${srchType}'));
+          'https://dhlottery.co.kr/gameResult.do?method=statByNumber&sttDrwNo=$sttDrwNo&edDrwNo=$edDrwNo&srchType=$srchType'));
       if (response.statusCode == 200) {
-        dom.Document document = parser
-            .parse(await UrlEncoder().decodeByte(response.bodyBytes, 'euc-kr'));
-
-        if (kDebugMode) Clipboard.setData(ClipboardData(text: document.text));
+        dom.Document document = parser.parse(cp949.decode(response.bodyBytes));
 
         var listRoot = document.getElementById('printTarget')!.children[3];
 

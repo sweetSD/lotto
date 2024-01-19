@@ -31,7 +31,7 @@ class LottoWinResultWidget extends StatelessWidget {
                 '제${lotto!.drawNumber}회',
                 color: Colors.blue,
               ),
-              LottoText(' 당첨번호'),
+              const LottoText(' 당첨번호'),
             ],
           ),
           LottoText(
@@ -107,15 +107,15 @@ class LottoPickWidget extends StatelessWidget {
             children: <Widget>[
               if (!onlyPicks) ...[
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: index != null
                       ? LottoText(String.fromCharCode(65 + index!))
-                      : Space(0),
+                      : const Space(0),
                 ),
                 Container(
                   child: rank != null
-                      ? LottoText(rank! > 0 ? '${rank}등당첨' : '낙첨')
-                      : Space(0),
+                      ? LottoText(rank! > 0 ? '$rank등당첨' : '낙첨')
+                      : const Space(0),
                 ),
               ],
               Row(

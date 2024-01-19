@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class UrlEncoder {
-  static const MethodChannel _platform = const MethodChannel('_ENCODING');
+class _UrlEncoder {
+  static const MethodChannel _platform = MethodChannel('_ENCODING');
 
   Future<String> encode(String data, [String encoding = 'utf-8']) async {
     String? res = data;

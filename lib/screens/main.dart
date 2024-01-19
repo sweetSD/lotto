@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lotto/animation/fade.dart';
-import 'package:lotto/const.dart';
 import 'package:lotto/network/lotto.dart';
 import 'package:lotto/network/network.dart';
 import 'package:lotto/screens/analyze.dart';
@@ -18,7 +14,6 @@ import 'package:lotto/screens/lotto.dart';
 import 'package:lotto/screens/lucky.dart';
 import 'package:lotto/screens/map.dart';
 import 'package:lotto/screens/picker.dart';
-import 'package:lotto/screens/store.dart';
 import 'package:lotto/widgets/basescreen.dart';
 import 'package:lotto/widgets/const.dart';
 import 'package:lotto/widgets/dialogs.dart';
@@ -33,7 +28,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 DateTime beginDateTime = DateTime(2002, 12, 7, 20, 55, 0);
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key}) : super(key: key);
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -61,7 +56,7 @@ class _MainPageState extends State<MainPage> {
     debugPrint(_curDrawNum.toString());
 
     Future.delayed(Duration.zero, () async {
-      Lotto? lotto = null;
+      Lotto? lotto;
       int tempDrawNum = _curDrawNum!;
 
       while (lotto == null || lotto.result == "fail") {
@@ -79,7 +74,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final qrButton = IconButton(
-      icon: Icon(FontAwesomeIcons.qrcode),
+      icon: const Icon(FontAwesomeIcons.qrcode),
       color: Colors.black,
       onPressed: () async {
         buildDialog(
@@ -92,7 +87,7 @@ class _MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   ListTile(
-                    title: Row(
+                    title: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(FontAwesomeIcons.camera),
@@ -118,7 +113,7 @@ class _MainPageState extends State<MainPage> {
                     },
                   ),
                   ListTile(
-                    title: Row(
+                    title: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(Icons.storage),
@@ -138,10 +133,10 @@ class _MainPageState extends State<MainPage> {
                       Navigator.pop(context);
                       if (pickedFile != null) {
                         try {
-                          debugPrint(pickedFile?.path);
+                          debugPrint(pickedFile.path);
                           // 사진에서 QR코드 인식이 안될 경우 아래의 로직이 실행되지 않습니다. (???????)
                           var timer =
-                              Timer.periodic(Duration(seconds: 1), (timer) {
+                              Timer.periodic(const Duration(seconds: 1), (timer) {
                             timer.cancel();
                             Fluttertoast.showToast(
                                 msg:
@@ -150,21 +145,21 @@ class _MainPageState extends State<MainPage> {
                           var scanResult =
                               await scanner.scanPath(pickedFile.path);
                           debugPrint(scanResult);
-                          if (timer != null) timer.cancel();
+                          timer.cancel();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
                                       LottoQRResultPage(scanResult)));
                         } catch (e) {
-                          debugPrint('!' + e.toString());
+                          debugPrint('!$e');
                         }
                         //Navigator.push(context, MaterialPageRoute(builder: (context) => LottoQRResultPage('https://m.dhlottery.co.kr/qr.do?method=winQr&v=0813q112730313843q101824252728q011314242543q030619214044q1430353843440000001677')));
                       }
                     },
                   ),
                   ListTile(
-                    title: Row(
+                    title: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(Icons.fact_check_rounded),
@@ -191,7 +186,7 @@ class _MainPageState extends State<MainPage> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 100,
             height: 65,
             child: Image.asset("assets/images/new_icon_512x512_clear.png"),
@@ -201,7 +196,7 @@ class _MainPageState extends State<MainPage> {
       backgroundColor: Colors.white,
       centerTitle: true,
       leading: IconButton(
-        icon: Icon(
+        icon: const Icon(
           FontAwesomeIcons.store,
           color: Colors.black,
         ),
@@ -216,7 +211,7 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     ListTile(
-                      title: Row(
+                      title: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Icon(Icons.near_me_rounded),
@@ -238,7 +233,7 @@ class _MainPageState extends State<MainPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => NearStoreMapPage()));
+                                builder: (context) => const NearStoreMapPage()));
                       },
                     ),
                   ],
@@ -259,7 +254,7 @@ class _MainPageState extends State<MainPage> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     width: 100,
                     height: 65,
                     child:
@@ -274,7 +269,7 @@ class _MainPageState extends State<MainPage> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               alignment: Alignment.center,
-              child: LottoText("오류가 발생하였습니다.\n잠시후 다시 시도해주세요."),
+              child: const LottoText("오류가 발생하였습니다.\n잠시후 다시 시도해주세요."),
             ),
           );
         }
@@ -282,27 +277,27 @@ class _MainPageState extends State<MainPage> {
         return BaseScreen(
           appBar: appbar,
           body: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Column(
                 children: <Widget>[
-                  Space(10),
+                  const Space(10),
                   if (snapshot.hasData) ...[
                     AnimatedOpacity(
                       opacity: snapshot.hasData ? 1 : 0,
-                      duration: Duration(milliseconds: 750),
+                      duration: const Duration(milliseconds: 750),
                       child: LottoWinResultWidget(snapshot.hasData
                           ? data
                           : Lotto('', 0, beginDateTime, 0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0)),
                     ),
-                    Space(10),
+                    const Space(10),
                     AnimatedOpacity(
                       opacity: snapshot.hasData ? 1 : 0,
-                      duration: Duration(milliseconds: 750),
+                      duration: const Duration(milliseconds: 750),
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.15,
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: roundBoxDecoration(),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -310,7 +305,7 @@ class _MainPageState extends State<MainPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Expanded(
+                                const Expanded(
                                   child: LottoText(
                                     '총 판매금액',
                                     color: Colors.grey,
@@ -321,9 +316,8 @@ class _MainPageState extends State<MainPage> {
                                   child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
-                                        ? currencyFormat
-                                                .format(data.totalSellAmount) +
-                                            '원'
+                                        ? '${currencyFormat
+                                                .format(data.totalSellAmount)}원'
                                         : '집계중',
                                     align: TextAlign.right,
                                   ),
@@ -333,7 +327,7 @@ class _MainPageState extends State<MainPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Expanded(
+                                const Expanded(
                                   child: LottoText(
                                     '1등 당첨금액',
                                     color: Colors.grey,
@@ -344,9 +338,8 @@ class _MainPageState extends State<MainPage> {
                                   child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
-                                        ? currencyFormat
-                                                .format(data.winnerAmount) +
-                                            '원'
+                                        ? '${currencyFormat
+                                                .format(data.winnerAmount)}원'
                                         : '집계중',
                                     align: TextAlign.right,
                                   ),
@@ -356,7 +349,7 @@ class _MainPageState extends State<MainPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Expanded(
+                                const Expanded(
                                   child: LottoText(
                                     '1등 당첨자',
                                     color: Colors.grey,
@@ -367,9 +360,8 @@ class _MainPageState extends State<MainPage> {
                                   child: LottoText(
                                     (snapshot.hasData &&
                                             data!.totalSellAmount! > 0)
-                                        ? currencyFormat
-                                                .format(data.winnerCount) +
-                                            '명'
+                                        ? '${currencyFormat
+                                                .format(data.winnerCount)}명'
                                         : '집계중',
                                     align: TextAlign.right,
                                   ),
@@ -385,7 +377,7 @@ class _MainPageState extends State<MainPage> {
                       alignment: Alignment.center,
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.25,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircularProgressIndicator(),
@@ -395,10 +387,10 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ),
                   ],
-                  Space(10),
+                  const Space(10),
                   FadeInOffset(
                     delayInMilisecond: 0,
-                    offset: Offset(0, 50),
+                    offset: const Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
                         _dateScrollController = ScrollController(
@@ -413,14 +405,14 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: LottoText('회차 선택'),
+                        child: const LottoText('회차 선택'),
                       ),
                     ),
                   ),
-                  Space(10),
+                  const Space(10),
                   FadeInOffset(
                     delayInMilisecond: 150,
-                    offset: Offset(0, 50),
+                    offset: const Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
                         Navigator.push(
@@ -436,13 +428,13 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: LottoText('당첨 번호 통계 확인'),
+                        child: const LottoText('당첨 번호 통계 확인'),
                       ),
                     ),
                   ),
                   FadeInOffset(
                     delayInMilisecond: 300,
-                    offset: Offset(0, 50),
+                    offset: const Offset(0, 50),
                     child: Divider(
                       height: 25,
                       thickness: 1,
@@ -451,13 +443,13 @@ class _MainPageState extends State<MainPage> {
                   ),
                   FadeInOffset(
                     delayInMilisecond: 450,
-                    offset: Offset(0, 50),
+                    offset: const Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LuckyBallPage(),
+                              builder: (context) => const LuckyBallPage(),
                             ));
                       },
                       child: Container(
@@ -465,20 +457,20 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: LottoText('행운 번호 확인'),
+                        child: const LottoText('행운 번호 확인'),
                       ),
                     ),
                   ),
-                  Space(10),
+                  const Space(10),
                   FadeInOffset(
                     delayInMilisecond: 600,
-                    offset: Offset(0, 50),
+                    offset: const Offset(0, 50),
                     child: InkWell(
                       onTap: () async {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => QRResultPage(),
+                              builder: (context) => const QRResultPage(),
                             ));
                       },
                       child: Container(
@@ -486,7 +478,7 @@ class _MainPageState extends State<MainPage> {
                         alignment: Alignment.center,
                         decoration: roundBoxDecoration()
                             .copyWith(color: Colors.grey[200]),
-                        child: LottoText('QR코드 기록'),
+                        child: const LottoText('QR코드 기록'),
                       ),
                     ),
                   ),
@@ -502,7 +494,7 @@ class _MainPageState extends State<MainPage> {
                   //     child: LottoText('개발자에게 로또 후원하기'),
                   //   ),
                   // ),
-                  Space(60),
+                  const Space(60),
                 ],
               )),
         );
@@ -520,7 +512,7 @@ class _MainPageState extends State<MainPage> {
         }
       });
 
-      Lotto? lotto = null;
+      Lotto? lotto;
 
       while (lotto == null || lotto.result == "fail") {
         lotto = await NetworkUtil().getLottoNumber(drawNum--);
@@ -540,7 +532,7 @@ class _MainPageState extends State<MainPage> {
             color: Colors.transparent,
             child: ListView.builder(
               controller: _dateScrollController,
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.zero,
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -561,12 +553,12 @@ class _MainPageState extends State<MainPage> {
                   },
                   child: Container(
                     color: index % 2 == 0 ? Colors.white : Colors.grey[200],
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         if (_drawDates.length - index == _curDrawNum)
-                          Icon(Icons.arrow_right),
+                          const Icon(Icons.arrow_right),
                         LottoText(
                             '${calculateDrawNum(_drawDates[index])}회 (${DateFormat('yyyy-MM-dd').format(_drawDates[index])})')
                       ],

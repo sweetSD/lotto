@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:lotto/const.dart';
 import 'package:lotto/screens/main.dart';
-import 'package:lotto/widgets/text.dart';
 import 'package:lotto/widgets/widgets.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -18,10 +16,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       InterstitialAd.load(
           adUnitId: admobAppStartID,
-          request: AdRequest(),
+          request: const AdRequest(),
           adLoadCallback:
               InterstitialAdLoadCallback(onAdLoaded: (InterstitialAd ad) {
             ad.show();
@@ -34,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void pushToMainPage() {
     Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
+        MaterialPageRoute(builder: (context) => const MainPage()), (route) => false);
   }
 
   @override
@@ -46,16 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: MediaQuery.of(context).size.width * 0.3,
             height: MediaQuery.of(context).size.width * 0.3,
             child: Image.asset("assets/images/new_icon_512x512_clear.png"),
           ),
-          Space(50),
-          Container(
+          const Space(50),
+          SizedBox(
             width: screenSize.width * 0.2,
             height: screenSize.width * 0.2,
-            child: LoadingIndicator(indicatorType: Indicator.ballPulseSync),
+            child: const LoadingIndicator(indicatorType: Indicator.ballPulseSync),
           ),
         ],
       ),

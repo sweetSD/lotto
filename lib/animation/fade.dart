@@ -7,7 +7,7 @@ class FadeInOffset extends StatefulWidget {
   final Offset offset;
   final Widget child;
 
-  const FadeInOffset({this.delayInMilisecond = 0, this.duration = const Duration(milliseconds: 500), this.offset = const Offset(0, 0), required this.child});
+  const FadeInOffset({super.key, this.delayInMilisecond = 0, this.duration = const Duration(milliseconds: 500), this.offset = const Offset(0, 0), required this.child});
 
   @override
   FadeInOffsetState createState() => FadeInOffsetState();
@@ -26,10 +26,11 @@ class FadeInOffsetState extends State<FadeInOffset> with SingleTickerProviderSta
     controller = AnimationController(vsync: this, duration: widget.duration);
     controller!.addListener(() {setState(() {});});
     fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(controller!);
-    offsetAnimation = Tween<Offset>(begin: widget.offset, end: Offset(0, 0)).animate(controller!);
+    offsetAnimation = Tween<Offset>(begin: widget.offset, end: const Offset(0, 0)).animate(controller!);
     Future.delayed(Duration(milliseconds: widget.delayInMilisecond), () {
-      if (controller != null)
+      if (controller != null) {
         controller!.forward();
+      }
     });
   }
 

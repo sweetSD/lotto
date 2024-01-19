@@ -22,7 +22,7 @@ class TextBinggrae extends StatelessWidget {
   final int? maxLines;
 
   const TextBinggrae(
-    this.text, {
+    this.text, {super.key, 
     this.color = Colors.black,
     this.size = 14,
     this.height = 1.5,
@@ -64,7 +64,7 @@ class LottoText extends StatelessWidget {
   final String? fontFamily;
 
   const LottoText(
-    this.text, {
+    this.text, {super.key, 
     this.color = Colors.black,
     this.size = 14,
     this.height = 1.5,

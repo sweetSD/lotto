@@ -4,7 +4,7 @@ import 'package:lotto/widgets/text.dart';
 class Space extends StatelessWidget {
   final double size;
 
-  const Space(this.size);
+  const Space(this.size, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class LottoBall extends StatelessWidget {
   final bool useShadow;
 
   const LottoBall(this.number,
-      {this.backgroundColor, this.textColor, this.useShadow = true});
+      {super.key, this.backgroundColor, this.textColor, this.useShadow = true});
 
   Color getBallColor(int number) {
     if (number >= 1 && number <= 10) return Colors.yellow;
@@ -42,12 +42,15 @@ class LottoBall extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.1,
       height: MediaQuery.of(context).size.width * 0.1,
       alignment: Alignment.center,
+      decoration: BoxDecoration(
+          color: backgroundColor ?? getBallColor(number as int),
+          borderRadius: BorderRadius.circular(50)),
       child: LottoText(
         number.toString(),
-        color: textColor == null ? Colors.white : textColor,
+        color: textColor ?? Colors.white,
         shadows: useShadow == true
             ? [
-                Shadow(
+                const Shadow(
                   offset: Offset(0.0, 0.0),
                   blurRadius: 2,
                   color: Color.fromARGB(125, 0, 0, 0),
@@ -55,11 +58,6 @@ class LottoBall extends StatelessWidget {
               ]
             : [],
       ),
-      decoration: BoxDecoration(
-          color: backgroundColor == null
-              ? getBallColor(number as int)
-              : backgroundColor,
-          borderRadius: BorderRadius.circular(50)),
     );
   }
 }
